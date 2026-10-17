@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>志愿通 · 高考志愿信息检索平台</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/home">
+      <span class="brand-mark">志</span>
+      <span class="brand-text">志愿通</span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <a href="#/home" data-route="home">首页</a>
+      <a href="#/rules" data-route="rules">规则百科</a>
+      <a href="#/majors" data-route="majors">专业与行业</a>
+      <a href="#/universities" data-route="universities">院校库</a>
+      <a href="#/ai" data-route="ai">AI 志愿建议</a>
+    </nav>
+
+    <div class="topbar-search">
+      <input id="globalSearch" type="search" placeholder="搜索名词 / 专业 / 院校…" autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<main id="app" class="app"></main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-strong">免责声明</p>
+    <p>
+      本平台所有数据来自各省教育考试院公开文件、阳光高考平台、教育部公示名单及各院校官网的公开资料整理，
+      均为<b>参考信息</b>。招生政策、录取分数、专业设置、住宿条件每年可能调整，
+      请务必以<b>本省考试院当年发布文件</b>和<b>院校当年招生章程</b>为最终依据。
+      本平台不提供任何形式的录取承诺，不替代官方渠道。
+    </p>
+    <p class="footer-meta">志愿通 · MVP 演示版 · 数据更新日期见各模块标注</p>
+  </div>
+</footer>
+
+<script src="assets/js/data/rules.js"></script>
+<script src="assets/js/data/majors.js"></script>
+<script src="assets/js/data/universities-985.js"></script>
+<script src="assets/js/data/universities-211a.js"></script>
+<script src="assets/js/data/universities-211b.js"></script>
+<script src="assets/js/data/universities-sy.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

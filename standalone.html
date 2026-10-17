@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>志愿通 · 高考志愿信息检索平台</title>
+<style>
+/* ============================================================
+   志愿通 · 全局样式
+   ============================================================ */
+
+:root{
+  --brand:#2B6CF6;
+  --brand-dark:#1B51D0;
+  --brand-soft:#EBF1FE;
+  --teal:#0FA3A3;
+  --teal-soft:#E6F7F7;
+  --amber:#E08A00;
+  --amber-soft:#FFF4E0;
+  --green:#17A673;
+  --green-soft:#E6F7F1;
+  --red:#DC3D3D;
+  --red-soft:#FDECEC;
+
+  --bg:#F5F7FB;
+  --surface:#FFFFFF;
+  --surface-muted:#F8FAFD;
+  --text:#17233A;
+  --muted:#667799;
+  --border:#E3E9F4;
+
+  --radius-sm:8px;
+  --radius:14px;
+  --radius-lg:20px;
+  --shadow:0 1px 2px rgba(23,35,58,.04), 0 8px 24px rgba(23,35,58,.06);
+  --shadow-hover:0 2px 4px rgba(23,35,58,.06), 0 14px 34px rgba(23,35,58,.10);
+
+  --maxw:1180px;
+  --font:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font:400 15px/1.65 var(--font);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;font-weight:600;line-height:1.35}
+p{margin:0}
+
+/* ---------------- 顶部导航 ---------------- */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.topbar-inner{
+  max-width:var(--maxw);margin:0 auto;padding:0 20px;
+  height:64px;display:flex;align-items:center;gap:24px;
+}
+.brand{display:flex;align-items:center;gap:10px;flex:none}
+.brand-mark{
+  width:34px;height:34px;border-radius:10px;background:var(--brand);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:600;font-size:17px;
+}
+.brand-text{font-weight:600;font-size:17px;letter-spacing:.5px}
+
+.nav{display:flex;gap:4px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{
+  padding:8px 14px;border-radius:var(--radius-sm);color:var(--muted);
+  font-size:14.5px;white-space:nowrap;transition:background .15s,color .15s;
+}
+.nav a:hover{background:var(--surface-muted);color:var(--text)}
+.nav a.active{background:var(--brand-soft);color:var(--brand-dark);font-weight:500}
+
+.topbar-search{flex:none;width:260px}
+.topbar-search input{
+  width:100%;height:38px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface-muted);padding:0 14px;outline:none;transition:.15s;
+}
+.topbar-search input:focus{border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px var(--brand-soft)}
+
+/* ---------------- 页面容器 ---------------- */
+.app{max-width:var(--maxw);margin:0 auto;padding:28px 20px 64px;min-height:60vh}
+.page-head{margin-bottom:22px}
+.page-head h1{font-size:26px;margin-bottom:8px}
+.page-head p{color:var(--muted);font-size:14.5px;max-width:820px}
+
+/* ---------------- 首页 Hero ---------------- */
+.hero{
+  background:linear-gradient(180deg,#EEF4FF 0%,var(--bg) 100%);
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:44px 36px 40px;text-align:center;margin-bottom:26px;
+}
+.hero h1{font-size:32px;margin-bottom:12px}
+.hero .sub{color:var(--muted);font-size:15.5px;margin-bottom:26px}
+.hero-search{max-width:620px;margin:0 auto;display:flex;gap:10px}
+.hero-search input{
+  flex:1;height:52px;border:1px solid var(--border);border-radius:var(--radius);
+  background:#fff;padding:0 18px;outline:none;font-size:15.5px;box-shadow:var(--shadow);
+}
+.hero-search input:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.btn{
+  border:0;border-radius:var(--radius);cursor:pointer;font-weight:500;
+  padding:0 22px;height:52px;background:var(--brand);color:#fff;transition:.15s;white-space:nowrap;
+}
+.btn:hover{background:var(--brand-dark)}
+.btn-sm{height:38px;padding:0 16px;font-size:14px;border-radius:var(--radius-sm)}
+.btn-ghost{background:var(--surface-muted);color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:#fff;border-color:var(--brand);color:var(--brand-dark)}
+.hero-tips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.hero-tips span{font-size:13px;color:var(--muted)}
+
+/* ---------------- 通用卡片 / 网格 ---------------- */
+.grid{display:grid;gap:18px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);
+}
+.card-title{font-size:16px;font-weight:600;margin-bottom:6px}
+.card-desc{color:var(--muted);font-size:14px}
+
+.entry{
+  display:block;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+}
+.entry:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:#CBD8F0}
+.entry-icon{
+  width:42px;height:42px;border-radius:12px;background:var(--brand-soft);color:var(--brand-dark);
+  display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:600;margin-bottom:14px;
+}
+.entry h3{font-size:17px;margin-bottom:8px}
+.entry p{color:var(--muted);font-size:14px}
+.entry .meta{margin-top:12px;font-size:13px;color:var(--teal)}
+
+.section-head{
+  display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+  margin:34px 0 16px;padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.section-head h2{font-size:19px}
+.section-head .hint{color:var(--muted);font-size:13px}
+
+/* ---------------- 标签 / 徽章 ---------------- */
+.tag{
+  display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;
+  font-size:12.5px;background:var(--brand-soft);color:var(--brand-dark);white-space:nowrap;
+}
+.tag-teal{background:var(--teal-soft);color:#0B7C7C}
+.tag-amber{background:var(--amber-soft);color:#9A6000}
+.tag-green{background:var(--green-soft);color:#0E7A54}
+.tag-red{background:var(--red-soft);color:#A82B2B}
+.tag-plain{background:var(--surface-muted);color:var(--muted)}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px}
+
+.badge-985{background:#FDE8E8;color:#B32020}
+.badge-211{background:#EAF1FE;color:#1B51D0}
+.badge-sy{background:#FFF4E0;color:#9A6000}
+
+/* ---------------- 筛选栏 ---------------- */
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:16px;box-shadow:var(--shadow);
+}
+.toolbar input[type=search],.toolbar select{
+  height:38px;border:1px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--surface-muted);padding:0 12px;outline:none;transition:.15s;
+}
+.toolbar input[type=search]{flex:1;min-width:180px}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--brand);background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  height:32px;padding:0 14px;border-radius:999px;border:1px solid var(--border);
+  background:var(--surface);cursor:pointer;font-size:14px;color:var(--muted);transition:.15s;
+}
+.chip:hover{border-color:var(--brand);color:var(--brand-dark)}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+.result-count{color:var(--muted);font-size:13.5px;margin-left:auto}
+
+/* ---------------- 名词卡片（板块一） ---------------- */
+.term-list{display:grid;gap:12px}
+.term{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;
+}
+.term-head{
+  width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  padding:16px 20px;display:flex;align-items:center;gap:12px;
+}
+.term-head:hover{background:var(--surface-muted)}
+.term-name{font-weight:600;font-size:15.5px;flex:none}
+.term-def{color:var(--muted);font-size:14px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.term-caret{color:var(--muted);font-size:12px;transition:transform .18s}
+.term.open .term-caret{transform:rotate(180deg)}
+.term-body{display:none;padding:0 20px 20px;border-top:1px dashed var(--border)}
+.term.open .term-body{display:block}
+.term-block{margin-top:14px}
+.term-block .k{
+  font-size:12.5px;color:var(--brand-dark);font-weight:600;letter-spacing:.4px;
+  display:inline-block;margin-bottom:4px;
+}
+.term-block .v{font-size:14.5px;color:var(--text)}
+.term-block.pitfall .k{color:var(--red)}
+.term-block.pitfall .v{color:#8C3A3A}
+
+/* ---------------- 表格（板块四） ---------------- */
+.table-wrap{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:auto;max-height:70vh;
+}
+table.data{width:100%;border-collapse:separate;border-spacing:0;font-size:14px;min-width:1040px}
+table.data thead th{
+  position:sticky;top:0;z-index:2;background:var(--surface-muted);
+  text-align:left;font-weight:600;font-size:13.5px;color:var(--muted);
+  padding:12px 14px;border-bottom:1px solid var(--border);white-space:nowrap;
+}
+table.data tbody td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+table.data tbody tr{cursor:pointer;transition:background .12s}
+table.data tbody tr:hover{background:var(--brand-soft)}
+table.data tbody tr:last-child td{border-bottom:0}
+td.uname{font-weight:600;font-size:14.5px;white-space:nowrap}
+td.nowrap{white-space:nowrap;color:var(--muted)}
+td.clamp{max-width:260px;color:var(--muted);font-size:13.5px}
+
+.pager{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:18px}
+.pager button{
+  min-width:38px;height:38px;border:1px solid var(--border);background:var(--surface);
+  border-radius:var(--radius-sm);cursor:pointer;color:var(--muted);
+}
+.pager button:hover{border-color:var(--brand);color:var(--brand-dark)}
+.pager button.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:500}
+.pager button:disabled{opacity:.4;cursor:default}
+.pager .info{color:var(--muted);font-size:13.5px;margin:0 6px}
+
+/* ---------------- 抽屉 / 详情 ---------------- */
+.drawer-mask{
+  position:fixed;inset:0;background:rgba(23,35,58,.42);z-index:80;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.drawer-mask.show{opacity:1;pointer-events:auto}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;width:min(520px,92vw);z-index:81;
+  background:var(--surface);box-shadow:-8px 0 40px rgba(23,35,58,.18);
+  transform:translateX(102%);transition:transform .24s ease;
+  display:flex;flex-direction:column;
+}
+.drawer.show{transform:translateX(0)}
+.drawer-head{padding:22px 24px;border-bottom:1px solid var(--border);position:relative}
+.drawer-head h2{font-size:21px;margin-bottom:10px}
+.drawer-close{
+  position:absolute;top:18px;right:18px;width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface-muted);cursor:pointer;color:var(--muted);
+}
+.drawer-close:hover{background:#fff;color:var(--text)}
+.drawer-body{padding:20px 24px 40px;overflow:auto}
+.drow{padding:13px 0;border-bottom:1px dashed var(--border);display:flex;gap:16px}
+.drow:last-child{border-bottom:0}
+.drow .dk{flex:none;width:92px;color:var(--muted);font-size:13.5px}
+.drow .dv{flex:1;font-size:14.5px}
+.note-box{
+  margin-top:16px;padding:12px 14px;border-radius:var(--radius-sm);
+  background:var(--amber-soft);color:#8A5A00;font-size:13.5px;
+}
+
+/* ---------------- 专业热度（板块二） ---------------- */
+.major-row{
+  display:flex;align-items:center;gap:16px;padding:14px 18px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  box-shadow:var(--shadow);margin-bottom:10px;cursor:pointer;transition:.15s;
+}
+.major-row:hover{border-color:#CBD8F0;box-shadow:var(--shadow-hover)}
+.major-name{width:150px;flex:none;font-weight:600;font-size:15px}
+.major-cat{width:88px;flex:none;font-size:13px;color:var(--muted)}
+.major-bar{flex:1;height:9px;border-radius:999px;background:var(--surface-muted);overflow:hidden;min-width:80px}
+.major-bar i{display:block;height:100%;border-radius:999px;background:var(--brand)}
+.major-score{width:56px;flex:none;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.major-flags{width:112px;flex:none;display:flex;gap:6px;justify-content:flex-end}
+
+.dir-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow);
+}
+.dir-card h3{font-size:16px;margin-bottom:6px}
+.dir-card .heat{font-size:12.5px;color:var(--teal);margin-bottom:10px;display:block}
+.dir-card p{font-size:14px;color:var(--muted);margin-bottom:10px}
+
+/* ---------------- AI 表单（板块三） ---------------- */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13.5px;color:var(--muted)}
+.field input,.field select,.field textarea{
+  border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-muted);
+  padding:10px 12px;outline:none;transition:.15s;width:100%;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);background:#fff}
+.field textarea{resize:vertical;min-height:76px}
+.out-box{
+  white-space:pre-wrap;font-size:13.5px;line-height:1.75;
+  background:var(--surface-muted);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:16px;max-height:420px;overflow:auto;font-family:ui-monospace,Consolas,Menlo,monospace;
+}
+.step-hint{display:flex;gap:10px;font-size:13.5px;color:var(--muted);align-items:center;margin-bottom:14px}
+
+/* ---------------- 空状态 ---------------- */
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty .big{font-size:34px;margin-bottom:12px;opacity:.5}
+
+/* ---------------- 页脚 ---------------- */
+.footer{border-top:1px solid var(--border);background:var(--surface);margin-top:40px}
+.footer-inner{max-width:var(--maxw);margin:0 auto;padding:28px 20px 40px}
+.footer-strong{font-weight:600;font-size:14.5px;margin-bottom:8px}
+.footer p{color:var(--muted);font-size:13px;line-height:1.8}
+.footer-meta{margin-top:12px;font-size:12.5px;color:#93A0B8}
+
+/* ---------------- 响应式 ---------------- */
+@media (max-width:980px){
+  .grid-4{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:repeat(2,1fr)}
+  .topbar-search{width:180px}
+}
+@media (max-width:720px){
+  .topbar-inner{height:auto;padding:10px 16px;flex-wrap:wrap;gap:10px}
+  .nav{order:3;width:100%;flex:1 1 100%}
+  .brand-text{display:none}
+  .topbar-search{flex:1;width:auto}
+  .app{padding:18px 16px 48px}
+  .hero{padding:30px 20px;border-radius:var(--radius)}
+  .hero h1{font-size:24px}
+  .hero-search{flex-direction:column}
+  .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .major-row{flex-wrap:wrap;gap:10px}
+  .major-name{width:auto}
+  .major-cat{width:auto}
+  .major-bar{order:5;flex:1 1 100%}
+  .term-def{display:none}
+}
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/home">
+      <span class="brand-mark">志</span>
+      <span class="brand-text">志愿通</span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <a href="#/home" data-route="home">首页</a>
+      <a href="#/rules" data-route="rules">规则百科</a>
+      <a href="#/majors" data-route="majors">专业与行业</a>
+      <a href="#/universities" data-route="universities">院校库</a>
+      <a href="#/ai" data-route="ai">AI 志愿建议</a>
+    </nav>
+
+    <div class="topbar-search">
+      <input id="globalSearch" type="search" placeholder="搜索名词 / 专业 / 院校…" autocomplete="off">
+    </div>
+  </div>
+</header>
+
+<main id="app" class="app"></main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-strong">免责声明</p>
+    <p>
+      本平台所有数据来自各省教育考试院公开文件、阳光高考平台、教育部公示名单及各院校官网的公开资料整理，
+      均为<b>参考信息</b>。招生政策、录取分数、专业设置、住宿条件每年可能调整，
+      请务必以<b>本省考试院当年发布文件</b>和<b>院校当年招生章程</b>为最终依据。
+      本平台不提供任何形式的录取承诺，不替代官方渠道。
+    </p>
+    <p class="footer-meta">志愿通 · MVP 演示版 · 数据更新日期见各模块标注</p>
+  </div>
+</footer>
+
+
+
+
+
+
+
+
+<script>
+/* ===== rules.js ===== */
+/* 板块一：填报规则与名词解释
+   字段说明：
+   term 名词 / cat 分类 / def 一句话定义 / plain 通俗解释 / example 举例
+   pitfall 易错提醒 / scope 适用范围（"全国" 或 "分省差异"） */
+window.GK_RULES = [
+  /* ===== 投档规则 ===== */
+  {
+    id: "pingxing", term: "平行志愿", cat: "投档规则", scope: "全国",
+    def: "同一批次内可填多个志愿，投档时按“分数优先、遵循志愿、一轮投档”的规则依次检索。",
+    plain: "你可以把一批志愿看成排成一队的几个篮子。系统先把全省考生从高分到低分排队，轮到你时，从你填的第 1 个志愿开始往后看，哪个学校还有名额就投进哪个，投出去就结束，不再看后面的。",
+    example: "A 考生填了 45 个院校专业组，系统按第 1、2、3…的顺序检查，直到找到一个还有空位的组，即被投档。",
+    pitfall: "很多人误解为“几个志愿同时投”，其实是顺序检索、只投一次。投出去的志愿一旦被退档，后面的志愿也全部作废，只能等征集志愿。"
+  },
+  {
+    id: "shunxu", term: "顺序志愿", cat: "投档规则", scope: "分省差异",
+    def: "以“志愿优先”为原则，先把所有填了某一志愿的考生按分数排序，再按计划数投档。",
+    plain: "先看你填的是不是第一志愿，学校优先录第一志愿考生；第一志愿没招满，才看第二志愿的考生。所以第一志愿极其关键。",
+    example: "某校在某省只招 20 人，若第一志愿上线考生有 30 人，那么第二志愿填它的考生无论分多高都无法被投档。",
+    pitfall: "新高考省份多数已改用平行志愿，但提前批、部分特殊类型批次仍可能用顺序志愿，务必看本省当年文件。"
+  },
+  {
+    id: "fenshuyouxian", term: "分数优先（投档）", cat: "投档规则", scope: "全国",
+    def: "投档时先按考生总分（含政策性加分后的投档分）从高到低排队，高分者优先被检索。",
+    plain: "分数是排队的依据，不是“谁填在前面谁先投”。只有轮到你的位置时，才会开始检索你的志愿。",
+    example: "同分的两名考生，会按各省规定的同分排序规则（如语文数学总分、单科成绩等）排出先后。",
+    pitfall: "投档分不等于卷面分，可能含政策性加分；同分排序规则各省不同，临界位次一定要查本省规则。"
+  },
+  {
+    id: "zunyizhiyuan", term: "遵循志愿", cat: "投档规则", scope: "全国",
+    def: "检索考生志愿时，严格按考生填报的先后顺序依次检索，先满足排在前面的志愿。",
+    plain: "把最想去的放前面，不要“怕浪费”把保底校放第一。系统不会替你觉得哪个更好，它只看你填的顺序。",
+    example: "你把 B 校填在第 1 位、A 校填在第 2 位，即使 A 校分数更低、你更想去，也会优先被投到 B 校。",
+    pitfall: "最常见的错误是“按录取分数从高到低机械排列”，忽略了本人真实意愿和身体条件限制。"
+  },
+  {
+    id: "yiluntoudang", term: "一轮投档", cat: "投档规则", scope: "全国",
+    def: "平行志愿批次中，每位考生在同一批次只能被投档一次。",
+    plain: "投出去只有一次机会。如果被投进的学校退档，你不能再投本批次的其他志愿，只能参加征集志愿或进入下一批次。",
+    example: "考生被第 12 个志愿投档后，因不服从专业调剂被退档，则第 13 至 45 个志愿全部失效。",
+    pitfall: "这是平行志愿最大的风险点。“不服从调剂”是退档的首要原因。"
+  },
+  {
+    id: "toudangbilier", term: "投档比例", cat: "投档规则", scope: "全国",
+    def: "院校调阅考生档案数与招生计划数的比例，规定不得超过 120%，实践中多为 105% 以内。",
+    plain: "如果某校计划招 100 人、投档比例 105%，那么考试院会投 105 份档案过去，理论上多出的 5 人存在被退档的可能。",
+    example: "平行志愿批次普遍按 100% 或 105% 投档，很多院校公开承诺“提档不退档”。",
+    pitfall: "“投档成功”不等于“录取”。要关注该校招生章程是否承诺提档不退档。"
+  },
+  {
+    id: "monitoudang", term: "模拟投档", cat: "投档规则", scope: "全国",
+    def: "正式投档前，考试院与院校之间进行的若干次“预演”，用于确定投档比例和调档线。",
+    plain: "是内部流程，考生不需要也不参与。它的作用是让院校在正式投档前知道大概能收到什么分数段的考生。",
+    example: "某校先按 105% 模拟，发现生源好，于是追加计划，把正式投档比例调到 100%。",
+    pitfall: "模拟投档结果不对外公布，网上流传的“模拟投档线”多为猜测，不要当作正式依据。"
+  },
+
+  /* ===== 录取规则 ===== */
+  {
+    id: "zhuanyejicha", term: "专业级差", cat: "录取规则", scope: "分省差异",
+    def: "在专业录取时，若考生未被前一专业志愿录取，则其后续专业志愿要减掉一定分数后再参与排序。",
+    plain: "比如级差为 2 分，你第一专业没录上，第二专业就按“你的分数 −2”和别人比，第三专业再减 2。等于越往后的志愿越吃亏。",
+    example: "某校规定级差 2-1-0-0，考生 600 分：第 1 专业按 600 排，第 2 专业按 598 排，第 3 专业按 597 排。",
+    pitfall: "近几年大量高校已取消专业级差，改为“分数优先”。务必查该校当年招生章程，不要用旧信息。"
+  },
+  {
+    id: "zhuanyeqing", term: "专业志愿优先（专业清）", cat: "录取规则", scope: "分省差异",
+    def: "专业录取时以专业志愿顺序为第一优先级，先录第一专业志愿考生，再录第二专业志愿考生。",
+    plain: "在这种规则下，第一专业志愿填得准最重要。分数高但第一志愿扎堆，也可能被挤到后面的专业。",
+    example: "某专业只招 10 人，第一志愿报它的考生有 15 人，则按分数录满 10 人，第二志愿考生再高分也进不来。",
+    pitfall: "与“分数优先”结果差别很大，属于选校前必须确认的关键规则。"
+  },
+  {
+    id: "tiaoji", term: "服从专业调剂", cat: "录取规则", scope: "全国",
+    def: "在院校专业组（或院校）内，同意被调剂到本人未填报但尚未录满的专业。",
+    plain: "勾选它相当于买了个保险：你的志愿专业都录不上时，学校可以把你安排到组内其他没招满的专业，而不是把你退回去。",
+    example: "考生只填了计算机、软件工程，勾选服从调剂后，可能被调剂到同组内的材料、化工等专业。",
+    pitfall: "不服从调剂是退档第一大原因。但勾选前必须看清该专业组里有没有你完全无法接受的专业——这正是“院校专业组”要设计好的原因。"
+  },
+  {
+    id: "tuidang", term: "退档", cat: "录取规则", scope: "全国",
+    def: "院校提档后，因不符合录取条件而将考生档案退回考试院，考生在本批次失去投档机会。",
+    plain: "常见原因有四类：不服从调剂、单科成绩不达标、体检受限、投档比例卡位。",
+    example: "某专业要求英语 ≥120 分，考生英语 116 分且不服从调剂，被退档。",
+    pitfall: "退档后无法再投本批次其他志愿，只能等征集志愿，风险极高。报志愿前请逐条核对招生章程中的限制条件。"
+  },
+  {
+    id: "tidianbutuidan", term: "提档不退档", cat: "录取规则", scope: "全国",
+    def: "院校在招生章程中承诺：对平行志愿批次服从调剂的进档考生不予退档。",
+    plain: "这是一个很实在的承诺，能显著降低退档风险。选校时值得把它作为一个加分项。",
+    example: "不少院校会写明“平行志愿批次，符合条件且服从专业调剂的进档考生，保证不退档”。",
+    pitfall: "承诺通常附条件（如服从调剂、符合体检与单科要求），不是无条件保护。"
+  },
+
+  /* ===== 批次与分数线 ===== */
+  {
+    id: "shengkongxian", term: "省控线（批次控制分数线）", cat: "批次与分数线", scope: "全国",
+    def: "各省按招生计划数和考生成绩划定的、进入某批次投档的最低分数要求。",
+    plain: "只有成绩（位次）达到这条线的考生，才有资格填报该批次并被投档。它是“门槛”，不是“录取线”。",
+    example: "某省本科批物理类省控线 430 分，430 分以下不能参加本科批投档。",
+    pitfall: "过线不等于能录取。热门院校的实际投档线通常远高于省控线。"
+  },
+  {
+    id: "teyitongzhaoxian", term: "特殊类型招生控制线", cat: "批次与分数线", scope: "分省差异",
+    def: "新高考省份取代原“一本线”的功能性分数线，用于强基计划、高校专项等特殊类型招生的报名资格参考。",
+    plain: "合并本科批次后，大家需要一个“相当于原来一本线”的参照线，于是有了这条线。它也是很多家长用来判断“这算不算好学校”的参照。",
+    example: "某省 2025 年物理类特殊类型招生控制线 505 分，强基计划报名一般要求达到此线。",
+    pitfall: "它不是录取控制线，不影响普通本科批投档资格，只用于特定类型招生。"
+  },
+  {
+    id: "picihebing", term: "批次合并", cat: "批次与分数线", scope: "分省差异",
+    def: "取消本科一批、二批、三批的划分，统一为“本科批”；部分省份还合并了专科批。",
+    plain: "对考生总体是好事：选择更多、不再被“一本二本”标签束缚。但志愿数量大幅增加，填报策略的重要性也大幅上升。",
+    example: "某省合并后本科批可填 96 个志愿，很多考生因为排序不当出现“高分低录”。",
+    pitfall: "批次合并后没有二本兜底，一旦志愿方案设计失误，滑档落差会更大。"
+  },
+  {
+    id: "toudangxian", term: "院校投档线（调档线）", cat: "批次与分数线", scope: "全国",
+    def: "某院校（或院校专业组）在某省投档结束后，被投档考生中的最低分，即该组当年的投档线。",
+    plain: "它是投档结束后才产生的“结果值”，不是事先确定的。所以往年的投档线只能参考，不能当今年的标准。",
+    example: "某院校专业组计划 50 人，最终投档 50 人，第 50 名的分数就是这条线。",
+    pitfall: "投档线受当年报考热度影响，波动可能很大，只看分数容易误判。"
+  },
+  {
+    id: "zuidifen", term: "录取最低分 / 最高分 / 平均分", cat: "批次与分数线", scope: "全国",
+    def: "某专业当年录取考生的最低分、最高分和平均分，是判断专业热度最直接的数据。",
+    plain: "最低分告诉你“踩线进”的难度；平均分告诉你“正常录取”的水平。想稳妥，应该拿自己的位次去对比平均分对应的位次。",
+    example: "某专业录取 30 人，最低 585、最高 620、平均 601。用平均分去对标比只看最低分安全得多。",
+    pitfall: "只招几个人的专业，最低分偶然性极大，参考价值有限，更应看位次和平均分。"
+  },
+  {
+    id: "zhengjizhiyuan", term: "征集志愿", cat: "批次与分数线", scope: "全国",
+    def: "某批次录取结束后，对未完成招生计划的院校，面向未被录取考生再次公开征集志愿。",
+    plain: "相当于“补录”，是滑档、退档考生的第二次机会。但剩下的名额通常集中在冷门院校或冷门专业。",
+    example: "本科批第一次投档后有院校没招满，考试院公布缺额并开放征集，符合条件的考生可再填一次。",
+    pitfall: "征集志愿时间极短（常常只有半天到一天），且分数往往不降反升。必须提前关注本省考试院通知。"
+  },
+  {
+    id: "tiqianpi", term: "提前批", cat: "批次与分数线", scope: "全国",
+    def: "在普通本科批之前录取的批次，主要包含军校、公安、师范、定向、部分特殊专业等。",
+    plain: "提前批是“先下手”，录不上不影响后面的普通批；但一旦被提前批录取，后面的所有志愿就都作废了。",
+    example: "被提前批的军校录取后，即使本科批填了更好的学校，也不会再被录取。",
+    pitfall: "不要抱着“多一次机会”的心态随便填提前批。填之前要确认自己真的愿意去。"
+  },
+
+  /* ===== 位次与换算 ===== */
+  {
+    id: "yifenyiduan", term: "一分一段表", cat: "位次与换算", scope: "全国",
+    def: "各省公布的成绩分段统计表，列出每个分数上有多少人、累计多少人，可查到自己的全省位次。",
+    plain: "它是志愿填报最重要的工具。因为每年的分数线会浮动，但位次相对稳定，用位次对比往年录取数据最可靠。",
+    example: "查到“物理类 612 分，本段人数 380，累计人数 12,600”，说明你的位次约为 12,600 名。",
+    pitfall: "注意区分“本段人数”和“累计人数”，并选对科类（物理/历史 或 文/理）。"
+  },
+  {
+    id: "weici", term: "位次", cat: "位次与换算", scope: "全国",
+    def: "考生成绩在全省同类考生（如同一科类）中的排名顺序。",
+    plain: "位次比分数更适合跨年比较。某校去年录取到 8,000 名，你的位次是 7,500 名，说明有一定把握。",
+    example: "在自己位次上下浮动一定范围（如 ±15%）去筛选院校专业，形成冲、稳、保三档。",
+    pitfall: "不同省份对同分考生的位次定义和排序规则不同，跨省无法直接比较。"
+  },
+  {
+    id: "weicifa", term: "位次法", cat: "位次与换算", scope: "全国",
+    def: "用自己当年的位次，去对比往年院校专业录取的最低/平均位次，判断录取概率的方法。",
+    plain: "是目前公认最稳的填报方法。分数会变、试卷难度会变，但“全省第几名”这件事的含金量相对稳定。",
+    example: "你今年位次 20,000，某校某专业近三年录取位次在 21,000—24,000 之间，属于“稳”的范畴。",
+    pitfall: "招生计划大幅增减、新增专业、院校更名或转设时，历史位次参考性下降。"
+  },
+  {
+    id: "xianchafa", term: "线差法", cat: "位次与换算", scope: "全国",
+    def: "用院校投档线与当年省控线的差值，来估算今年的投档分的传统方法。",
+    plain: "例如某校去年投档线 560、省控线 500，线差 60；今年省控线 510，就估算今年投档线约 570。",
+    example: "适合批次合并前、一线差数据积累较多的省份参考。",
+    pitfall: "线差法在批次合并、试卷难度波动大时误差明显，建议以位次法为主、线差法为辅。"
+  },
+  {
+    id: "daxiaonian", term: "大小年现象", cat: "位次与换算", scope: "全国",
+    def: "某院校（专业）录取分数在不同年份忽高忽低、呈现冷热交替的现象。",
+    plain: "去年太高，今年大家不敢报，分数就下来了；去年太低，今年大家抢着报，分数又上去了。",
+    example: "某校去年投档位次 12,000（“大年”，偏高），今年可能回落到 18,000。",
+    pitfall: "不能只参考最近一年数据。建议看近 3 年位次走势，避免刚好撞上“大年”。"
+  },
+
+  /* ===== 志愿设置 ===== */
+  {
+    id: "yuanxiaozhuanyezu", term: "院校专业组", cat: "志愿设置", scope: "分省差异",
+    def: "新高考省份的一种志愿单位：同一院校内，把选考科目要求相同的专业打包成一组，考生以“组”为单位填报。",
+    plain: "一个院校可能分成好几个专业组。组内可以调剂，组间不能调剂——所以填组时一定要看清组里有哪些专业。",
+    example: "某大学的“物理+化学”组里可能同时有计算机、化工、材料，若勾选服从调剂，就可能在组内被调到化工。",
+    pitfall: "最容易吃亏的地方：为了冲好专业而填了一个“混装”专业组，服从调剂后被调到组内的冷门专业。"
+  },
+  {
+    id: "zhuanyejiaweiyuanxiao", term: "专业（类）+院校", cat: "志愿设置", scope: "分省差异",
+    def: "以“一个专业 + 一所院校”为独立志愿单位，志愿数量非常多（如 96 个）。",
+    plain: "这种方式对考生最友好：你填的每个志愿就是明确的一个专业，不存在被调剂到组内其他专业的问题。",
+    example: "某省可填 96 个“专业+院校”志愿，全部填满并排好序，滑档风险大幅降低。",
+    pitfall: "数量多不等于可以乱填。顺序依然决定结果，且要真正填满、填出梯度。"
+  },
+  {
+    id: "xuankeyaoqiu", term: "选考科目要求", cat: "志愿设置", scope: "分省差异",
+    def: "新高考省份中，高校对考生高中选考科目的限制要求，通常分为“必选一门”“2 门均选”“不限”等。",
+    plain: "选科决定了你能报哪些专业。例如很多工科专业要求“物理 + 化学”，没选化学就无法填报。",
+    example: "“物理+化学”要求的专业组，只选物理没选化学的考生不能填报。",
+    pitfall: "高一选科时就要看专业要求，高三再发现选科不符就来不及了。"
+  },
+  {
+    id: "chongwenbao", term: "冲稳保", cat: "志愿设置", scope: "全国",
+    def: "将志愿按录取概率分成三档：冲（有希望但风险大）、稳（把握较大）、保（基本可以兜底）。",
+    plain: "合理的比例建议是：冲刺 20%~30%、稳妥 40%~50%、保底 30% 左右，且最后一两个志愿要能确保兜底。",
+    example: "40 个志愿可安排为：冲 10 个、稳 20 个、保 10 个，保底部分位次应明显低于自己。",
+    pitfall: "只填“冲”不填“保”是最常见的滑档原因；保底院校也要是自己愿意去的，否则等于白填。"
+  },
+
+  /* ===== 特殊类型招生 ===== */
+  {
+    id: "guojiazhuangxiang", term: "国家专项计划", cat: "特殊类型招生", scope: "全国",
+    def: "面向贫困地区定向招生的专项计划，由中央部门所属高校和部分地方高校承担，单列计划、单设批次。",
+    plain: "符合条件的考生可以多一次进入好大学的机会，通常录取分数低于普通批。",
+    example: "考生户籍和学籍均在国家专项计划实施区域内，且连续满 3 年，即可在专项批次填报。",
+    pitfall: "资格审核严格（户籍、学籍、父母户籍等多项要求），且被录取后一般不允许退档换录。"
+  },
+  {
+    id: "gaoxiaozhuangxiang", term: "高校专项计划", cat: "特殊类型招生", scope: "全国",
+    def: "又称“农村专项”，由教育部直属高校和其他自主招生试点高校面向农村学生单独招生。",
+    plain: "需要提前在阳光高考平台报名并经过材料审核，通过后一般在专项批次填报志愿。",
+    example: "通常 4—5 月报名，高考后进行资格审核与公示。",
+    pitfall: "报名时间在高考前，错过报名就无法参加，很多考生因不了解而错过。"
+  },
+  {
+    id: "qiangji", term: "强基计划", cat: "特殊类型招生", scope: "全国",
+    def: "面向基础学科（数学、物理、化学、生物、力学、历史、哲学、古文字等）的拔尖人才培养招生计划，多为本硕博衔接培养。",
+    plain: "适合真心喜欢基础学科、愿意长期做研究的考生。录取分数通常低于该校普通批，但培养方案固定、转专业受限。",
+    example: "一般 4 月报名，高考出分后确定入围名单，再参加校考（笔试+面试+体测）。",
+    pitfall: "“低分进名校”的诱惑背后是强绑定的专业与培养路径，不适合只为名校牌子而报。"
+  },
+  {
+    id: "zonghepingjia", term: "综合评价招生", cat: "特殊类型招生", scope: "分省差异",
+    def: "按高考成绩、校测成绩、学业水平考试成绩按比例折算综合分录取的招生方式。",
+    plain: "高考分数只占一部分（常见 60%~85%），校测表现好的考生可以“低分高录”。",
+    example: "综合分 = 高考成绩 60% + 校测 30% + 学考 10%，按综合分排序录取。",
+    pitfall: "各省、各校折算比例差异很大，且需要提前报名、参加校测，流程复杂。"
+  },
+  {
+    id: "gongfeishifan", term: "公费师范生 / 优师专项", cat: "特殊类型招生", scope: "全国",
+    def: "由财政承担学费住宿费并发放生活补助，毕业后须按协议到指定地区任教一定年限的师范生招生计划。",
+    plain: "上学不花钱、毕业有编制，但必须履行服务期约定（一般为 6 年），违约要退还费用并记入诚信档案。",
+    example: "部属师范大学公费师范生一般在提前批录取，毕业后回生源省份任教。",
+    pitfall: "服务期和履约地域需提前想清楚。适合真心愿意从教的考生，不要只为“免费+编制”。"
+  },
+  {
+    id: "zhongwaihezuo", term: "中外合作办学", cat: "特殊类型招生", scope: "全国",
+    def: "国内高校与境外高校合作举办的专业，通常单独代码招生，学费较高，部分可获双学位或出国学习。",
+    plain: "录取分数常常低于该校普通专业，是“低分上名校”的常见路径，但学费通常是普通专业的数倍甚至十倍。",
+    example: "某校中外合作专业学费 6 万元/年，录取分数比本校普通专业低 20~40 分。",
+    pitfall: "务必确认是“计划内统招”（有学历学位证）还是“计划外”，以及是否必须出国、外语要求等。"
+  },
+  {
+    id: "yishutiyu", term: "艺术类 / 体育类招生", cat: "特殊类型招生", scope: "全国",
+    def: "艺术类、体育类考生按“文化成绩 + 专业成绩”折算综合分投档录取，与普通类分开。",
+    plain: "不同省份的综合分折算公式不同，专业统考成绩和文化成绩的权重也不同。",
+    example: "某省美术类综合分 = 文化课成绩 × 30% + 专业成绩 × 750/300 × 70%。",
+    pitfall: "综合分公式、单科要求、专业合格线每年都可能调整，必须以本省当年文件为准。"
+  },
+  {
+    id: "junxiaogongan", term: "军校 / 公安院校报考", cat: "特殊类型招生", scope: "全国",
+    def: "报考军校、公安院校需在提前批填报，并额外通过政审、面试、体检和体能测试。",
+    plain: "除了分数，还有身体和政治条件门槛，且流程在高考前后就有安排，需提前准备。",
+    example: "一般 6 月下旬至 7 月初组织面试体检，未参加者不予录取。",
+    pitfall: "近视手术、体重、体能项目等都有明确标准，建议高一高二就对照标准提前了解。"
+  },
+
+  /* ===== 名词辨析 ===== */
+  {
+    id: "zhangchengjianshang", term: "招生章程 vs 招生简章", cat: "名词辨析", scope: "全国",
+    def: "招生章程是具法律效力的规范性文件，公布录取规则；招生简章多为宣传材料。",
+    plain: "填志愿时要以“招生章程”为准：专业级差、单科要求、体检限制、调剂规则都写在里面。",
+    example: "某校招生章程明确“英语专业要求英语单科不低于 120 分”，简章里往往不写。",
+    pitfall: "只看简章不看章程，是最容易踩坑的信息来源错误。"
+  },
+  {
+    id: "daliezhaosheng", term: "大类招生", cat: "名词辨析", scope: "全国",
+    def: "高校将若干相近专业合并为一个大类招生，学生入学后先通识培养，再通过分流确定具体专业。",
+    plain: "先进大门、再选房间。好处是延迟选择；风险是分流时按成绩排名，热门专业可能进不去。",
+    example: "“工科试验班”包含机械、能源、材料等多个方向，大二按绩点和志愿分流。",
+    pitfall: "要问清分流规则（按成绩还是按志愿）和往年热门方向的竞争程度。"
+  },
+  {
+    id: "zhuanzhuanye", term: "转专业政策", cat: "名词辨析", scope: "全国",
+    def: "高校允许在校生调整专业的条件与流程，各校差异极大。",
+    plain: "从“零门槛申请”到“仅前 5% 可转”，差别天壤。它是选校时一个被严重低估的指标。",
+    example: "部分高校实行“转出无门槛、转入有考核”，也有高校基本不允许转专业。",
+    pitfall: "不要抱着“先上一所好学校再转专业”的想法而冒进，先查清该校当年转专业实施办法。"
+  },
+  {
+    id: "baoyanlv", term: "保研率", cat: "名词辨析", scope: "全国",
+    def: "本科生获得推荐免试攻读研究生资格的比例，是衡量院校学术培养实力的重要指标。",
+    plain: "保研率高的学校，学生不必参加考研统考就有机会读研，这在就业压力大的环境下含金量很高。",
+    example: "顶尖 985 高校保研率可达 30% 以上，部分普通高校不足 3%。",
+    pitfall: "保研率高的学校内部竞争也激烈，且推免名额与专业、学院相关，不是人人有份。"
+  },
+  {
+    id: "zhuanyezu", term: "专业组内调剂范围", cat: "名词辨析", scope: "分省差异",
+    def: "服从调剂时，考生会被调到“同一院校专业组”内未录满的专业，不会跨组调剂。",
+    plain: "这就是为什么专业组的设计如此重要：组的边界就是你能被调剂的边界。",
+    example: "填报“物理+化学”组并服从调剂，不会被调到该校的“不限选科”组专业。",
+    pitfall: "若某组内含你完全不能接受的专业，要么不填这个组，要么有把握被组内某个专业录上。"
+  }
+];
+
+
+/* ===== majors.js ===== */
+/* 板块二：专业热度与行业前景
+   注意：heat 为“综合热度指数（0-100）”，由公开就业报告、招生计划变化、行业政策等
+   综合整理的**参考值**，不是官方排名。所有内容均需以当年官方数据为准。 */
+window.GK_DATA_META = {
+  updated: "2025 年整理（示例数据）",
+  sources: "教育部学科目录、麦可思《中国大学生就业报告》类型分类、国家产业规划文件、公开招聘平台薪酬区间",
+  disclaimer: "热度指数与薪酬为公开资料综合整理的参考值，随年份波动，仅供了解趋势，不作为报考依据。"
+};
+
+window.GK_MAJORS = [
+  { name: "人工智能", cat: "工学", heat: 98, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 15k-25k/月（一线城市，参考）",
+    desc: "学习机器学习、深度学习、计算机视觉、自然语言处理等，是做算法模型与智能系统的核心专业。",
+    jobs: ["算法工程师", "数据科学家", "AI 产品经理", "大模型应用开发"] },
+  { name: "计算机科学与技术", cat: "工学", heat: 96, level: "绿牌", trend: "平稳",
+    salary: "本科起薪约 10k-18k/月（参考）",
+    desc: "覆盖面最广的计算机专业，从编程基础、操作系统、网络到软件与算法都会学，转行弹性最大。",
+    jobs: ["软件开发工程师", "后端/前端工程师", "测试开发", "运维工程师"] },
+  { name: "软件工程", cat: "工学", heat: 93, level: "绿牌", trend: "平稳",
+    salary: "本科起薪约 10k-17k/月（参考）",
+    desc: "偏工程实践，强调项目管理、需求分析、系统设计，培养能独立交付软件产品的工程师。",
+    jobs: ["软件开发工程师", "技术项目经理", "DevOps 工程师", "全栈工程师"] },
+  { name: "信息安全 / 网络空间安全", cat: "工学", heat: 92, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 11k-19k/月（参考）",
+    desc: "研究系统与数据的安全防护、密码学、渗透测试与安全运营，属于国家紧缺方向。",
+    jobs: ["安全工程师", "渗透测试工程师", "安全运营", "数据安全合规"] },
+  { name: "集成电路设计与集成系统", cat: "工学", heat: 94, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 12k-22k/月（参考）",
+    desc: "芯片设计方向，涉及数字/模拟电路、版图、验证等，是国产替代战略下的重点扶持专业。",
+    jobs: ["数字IC设计工程师", "模拟IC工程师", "芯片验证工程师", "版图工程师"] },
+  { name: "微电子科学与工程", cat: "工学", heat: 91, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 11k-20k/月（参考）",
+    desc: "研究半导体器件、工艺与材料，与集成电路产业紧密相关，偏硬件与制造工艺。",
+    jobs: ["半导体工艺工程师", "器件工程师", "封装测试工程师"] },
+  { name: "数据科学与大数据技术", cat: "工学", heat: 90, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 10k-18k/月（参考）",
+    desc: "统计学 + 编程 + 业务建模结合，负责数据的采集、清洗、分析与价值挖掘。",
+    jobs: ["数据分析师", "数据工程师", "算法工程师", "商业分析师"] },
+  { name: "电气工程及其自动化", cat: "工学", heat: 88, level: "绿牌", trend: "平稳",
+    salary: "本科起薪约 8k-15k/月，电网系统另有稳定性优势（参考）",
+    desc: "电力系统、电机、电力电子为主，是进入国家电网、南方电网等体系的主要专业之一。",
+    jobs: ["电网系统运维", "电气设计工程师", "新能源电力工程师", "电控工程师"] },
+  { name: "自动化", cat: "工学", heat: 86, level: "绿牌", trend: "平稳",
+    salary: "本科起薪约 8k-15k/月（参考）",
+    desc: "控制理论 + 电子 + 计算机的交叉专业，是机器人、智能制造的重要基础。",
+    jobs: ["控制工程师", "机器人算法工程师", "嵌入式工程师", "工业自动化工程师"] },
+  { name: "机械设计制造及其自动化", cat: "工学", heat: 78, level: "黄牌", trend: "平稳",
+    salary: "本科起薪约 6k-12k/月（参考）",
+    desc: "传统工科基石，涉及设计、制造、材料与工艺，与智能制造融合后有一定回暖。",
+    jobs: ["结构设计工程师", "工艺工程师", "设备工程师", "智能制造工程师"] },
+  { name: "能源与动力工程 / 储能科学与工程", cat: "工学", heat: 87, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 8k-15k/月（参考）",
+    desc: "面向新能源发电、动力电池、储能系统的设计与研发，契合双碳与新能源产业。",
+    jobs: ["电池研发工程师", "储能系统工程师", "热管理工程师"] },
+  { name: "临床医学", cat: "医学", heat: 89, level: "绿牌", trend: "平稳",
+    salary: "规培期间收入较低，主治后显著提升（参考）",
+    desc: "学制长（5 年起步，多数需读研读博），但职业稳定性与社会认可度高，属于长周期回报专业。",
+    jobs: ["住院医师", "专科医师", "医学研究", "医疗管理"] },
+  { name: "口腔医学", cat: "医学", heat: 90, level: "绿牌", trend: "平稳",
+    salary: "就业后收入水平在医学类中偏高（参考）",
+    desc: "工作强度相对可控，民营口腔市场发展快，是医学类中就业满意度较高的方向。",
+    jobs: ["口腔科医师", "口腔诊所执业", "口腔正畸医师"] },
+  { name: "药学 / 生物制药", cat: "医学", heat: 80, level: "黄牌", trend: "上升",
+    salary: "本科起薪约 6k-11k/月（参考）",
+    desc: "药物研发、生产、质量控制与注册，创新药与生物医药产业带来新的岗位增量。",
+    jobs: ["药品研发", "药品注册", "质量QA/QC", "医药代表"] },
+  { name: "生物医学工程", cat: "工学", heat: 82, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 8k-14k/月（参考）",
+    desc: "医疗器械、影像设备、生物材料方向，是工科与医学的交叉专业，高端器械国产化带来需求。",
+    jobs: ["医疗器械研发", "影像算法工程师", "注册与法规工程师"] },
+  { name: "生物科学 / 生物工程", cat: "理学", heat: 62, level: "红牌", trend: "下降",
+    salary: "本科直接就业较难，多需读研（参考）",
+    desc: "基础性学科，本科阶段知识偏基础，直接对口岗位少，通常需要读研读博才有较好发展。",
+    jobs: ["科研助理", "生物技术研发（需研究生学历）", "实验室技术员"] },
+  { name: "法学", cat: "法学", heat: 68, level: "红牌", trend: "下降",
+    salary: "差异极大，顶尖院校与普通院校差距悬殊（参考）",
+    desc: "开设院校极多、毕业生数量大，法考通过率和院校层次对就业影响非常明显。",
+    jobs: ["律师（需法考）", "法务", "公务员", "司法辅助人员"] },
+  { name: "汉语言文学", cat: "文学", heat: 72, level: "黄牌", trend: "平稳",
+    salary: "起薪中等，教师与公职方向较稳定（参考）",
+    desc: "通用型文科专业，就业面广但替代性较强，考公考编与教师岗是主要出口。",
+    jobs: ["语文教师", "公务员", "编辑与内容运营", "文案策划"] },
+  { name: "新闻传播学 / 网络与新媒体", cat: "文学", heat: 74, level: "黄牌", trend: "平稳",
+    salary: "起薪约 5k-10k/月，个体差异大（参考）",
+    desc: "传统媒体收缩、新媒体与内容运营岗位增长，技能导向明显，作品集比学历更重要。",
+    jobs: ["新媒体运营", "内容策划", "短视频编导", "品牌公关"] },
+  { name: "会计学 / 财务管理", cat: "管理学", heat: 76, level: "黄牌", trend: "下降",
+    salary: "起薪约 5k-9k/月（参考）",
+    desc: "就业面广、门槛相对低，但基础核算岗位正被财务共享和自动化替代，需向管理会计转型。",
+    jobs: ["会计", "审计（事务所）", "财务分析", "税务师"] },
+  { name: "金融学 / 金融工程", cat: "经济学", heat: 79, level: "黄牌", trend: "平稳",
+    salary: "头部机构与普通机构差距极大（参考）",
+    desc: "对院校层次与人脉资源敏感，头部券商、基金门槛很高，普通院校毕业生多在银行基层。",
+    jobs: ["银行客户经理", "证券分析师", "量化研究员", "风控专员"] },
+  { name: "国际经济与贸易", cat: "经济学", heat: 64, level: "红牌", trend: "下降",
+    salary: "起薪约 5k-9k/月（参考）",
+    desc: "专业壁垒较弱，外语与实操能力更关键，跨境电商方向有一定结构性机会。",
+    jobs: ["外贸业务员", "跨境电商运营", "关务", "供应链专员"] },
+  { name: "应用心理学", cat: "理学", heat: 66, level: "红牌", trend: "平稳",
+    salary: "执业前期收入低，需长期积累（参考）",
+    desc: "社会需求上升但岗位供给有限，本科对口就业困难，需要读研并考取相关资格。",
+    jobs: ["心理咨询师（需资质）", "人力资源", "学校心理教师", "用户研究"] },
+  { name: "英语 / 翻译", cat: "文学", heat: 60, level: "红牌", trend: "下降",
+    salary: "起薪约 5k-9k/月（参考）",
+    desc: "通用型语言专业，受 AI 翻译冲击明显，需要叠加法律、医学、外贸等方向形成复合能力。",
+    jobs: ["翻译（需专业方向）", "外贸业务", "英语教师", "涉外文秘"] },
+  { name: "学前教育", cat: "教育学", heat: 70, level: "黄牌", trend: "下降",
+    salary: "公办园与民办园差异较大（参考）",
+    desc: "受出生人口下降影响，幼儿园教师需求收缩，考编竞争加剧，需关注岗位结构变化。",
+    jobs: ["幼儿教师", "早教机构", "教育咨询"] },
+  { name: "小学教育 / 学科教学", cat: "教育学", heat: 77, level: "黄牌", trend: "平稳",
+    salary: "公办教师有编制与假期优势（参考）",
+    desc: "教师岗位稳定性强，但教招竞争激烈、地域差异大，公费师范生路径确定性更高。",
+    jobs: ["小学/中学教师", "教培机构讲师", "教育产品运营"] },
+  { name: "土木工程", cat: "工学", heat: 55, level: "红牌", trend: "下降",
+    salary: "起薪约 5k-10k/月，项目现场另有补贴（参考）",
+    desc: "受房地产与基建投资周期影响明显，行业岗位收缩，但城市更新与海外工程仍有结构性机会。",
+    jobs: ["施工管理", "结构设计", "造价工程师", "工程监理"] },
+  { name: "建筑学", cat: "工学", heat: 58, level: "红牌", trend: "下降",
+    salary: "设计院收入下行，起薪约 5k-10k/月（参考）",
+    desc: "学制 5 年、投入大，行业景气度下行明显，需要向城市设计、景观、展陈等方向延伸。",
+    jobs: ["建筑师（设计院）", "方案设计师", "BIM 工程师"] },
+  { name: "化学 / 化学工程与工艺", cat: "理学", heat: 61, level: "红牌", trend: "平稳",
+    salary: "起薪约 5k-10k/月（参考）",
+    desc: "基础学科属性强，本科就业面窄，读研后进入新能源、新材料、半导体材料方向前景改善。",
+    jobs: ["材料研发", "工艺工程师", "检测分析", "电池材料研发"] },
+  { name: "电子信息工程 / 通信工程", cat: "工学", heat: 85, level: "绿牌", trend: "平稳",
+    salary: "本科起薪约 8k-16k/月（参考）",
+    desc: "信号处理、通信系统、嵌入式硬件方向，与 5G/6G、物联网、智能硬件产业密切相关。",
+    jobs: ["通信工程师", "嵌入式开发", "硬件工程师", "射频工程师"] },
+  { name: "车辆工程 / 智能车辆工程", cat: "工学", heat: 83, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 7k-14k/月（参考）",
+    desc: "从传统汽车向电动化、智能化转型，新能源车企与智能驾驶方向吸纳大量毕业生。",
+    jobs: ["整车工程师", "底盘/电驱工程师", "智能驾驶测试", "汽车电子工程师"] },
+  { name: "航空宇航科学与技术 / 飞行器设计", cat: "工学", heat: 84, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 8k-15k/月，军工院所稳定性好（参考）",
+    desc: "航空航天核心专业，与商业航天、无人机、低空经济高度相关，主要去向为院所与龙头企业。",
+    jobs: ["飞行器设计工程师", "无人机系统工程师", "总体设计", "试验工程师"] },
+  { name: "农学 / 智慧农业", cat: "农学", heat: 59, level: "黄牌", trend: "平稳",
+    salary: "起薪偏低，但农业科技与种业方向有政策扶持（参考）",
+    desc: "传统认知偏冷，但智慧农业、种业振兴、食品科技方向正在形成新的岗位需求。",
+    jobs: ["农业技术推广", "种业研发", "智慧农业工程师", "食品研发"] },
+  { name: "物流管理 / 供应链管理", cat: "管理学", heat: 69, level: "黄牌", trend: "平稳",
+    salary: "起薪约 5k-9k/月（参考）",
+    desc: "电商与制造业供应链升级带来需求，但基层岗位体力与时间投入较高。",
+    jobs: ["供应链专员", "仓储运营", "采购", "关务与跨境物流"] },
+  { name: "统计学 / 应用统计", cat: "理学", heat: 81, level: "绿牌", trend: "上升",
+    salary: "本科起薪约 8k-15k/月（参考）",
+    desc: "数学基础扎实，转向数据分析、量化金融、生物统计等方向都非常有优势。",
+    jobs: ["数据分析师", "量化研究员", "生物统计师", "风控建模"] },
+  { name: "数学与应用数学", cat: "理学", heat: 82, level: "黄牌", trend: "平稳",
+    salary: "本科直接就业面窄，深造后优势明显（参考）",
+    desc: "基础学科之母，本科阶段需主动叠加计算机或金融技能，否则容易“学得好但不知做什么”。",
+    jobs: ["算法工程师（需补充编程）", "中学教师", "量化研究", "精算"] },
+  { name: "护理学", cat: "医学", heat: 73, level: "黄牌", trend: "平稳",
+    salary: "公立医院较稳定，夜班与强度较大（参考）",
+    desc: "就业率高但工作强度大，男护士与专科护士（ICU、手术室）需求更旺。",
+    jobs: ["临床护士", "专科护士", "护理管理", "健康管理"] },
+  { name: "环境工程 / 环境科学", cat: "工学", heat: 57, level: "红牌", trend: "平稳",
+    salary: "起薪约 5k-9k/月（参考）",
+    desc: "受环保政策驱动，但行业内企业规模偏小、薪资水平一般，多需读研或考公进入环保系统。",
+    jobs: ["环保工程师", "环境监测", "环评咨询", "环保系统公务员"] },
+  { name: "动物医学", cat: "农学", heat: 75, level: "黄牌", trend: "上升",
+    salary: "宠物医疗方向收入提升较快（参考）",
+    desc: "从畜牧兽医扩展到宠物医疗，伴随宠物经济增长，临床兽医与宠物医院岗位需求上升。",
+    jobs: ["宠物医生", "畜牧兽医", "动物检疫", "兽药研发"] }
+];
+
+/* 行业前景方向：国家政策 + 产业趋势 + 对应专业 */
+window.GK_DIRECTIONS = [
+  {
+    name: "人工智能与大模型", heat: "极高", policy: "“人工智能+”行动、算力基础设施布局",
+    desc: "从模型训练、推理到行业落地，AI 正在渗透制造、医疗、金融、教育等几乎所有行业，算力、算法、数据岗位持续放量。",
+    majors: ["人工智能", "计算机科学与技术", "数据科学与大数据技术", "自动化", "统计学"]
+  },
+  {
+    name: "集成电路与半导体", heat: "极高", policy: "集成电路产业扶持、国产替代",
+    desc: "芯片设计、制造、封测、设备材料全链条存在大量人才缺口，是国家长期战略投入方向，稳定性与薪酬都较好。",
+    majors: ["集成电路设计与集成系统", "微电子科学与工程", "电子科学与技术", "材料科学与工程"]
+  },
+  {
+    name: "新能源与储能", heat: "高", policy: "双碳目标、新型电力系统建设",
+    desc: "光伏、风电、动力电池、储能系统快速发展，相关工程岗位需求旺盛，海外市场也在扩张。",
+    majors: ["能源与动力工程", "储能科学与工程", "电气工程及其自动化", "化学工程与工艺", "材料科学"]
+  },
+  {
+    name: "生物医药与大健康", heat: "高", policy: "创新药审批改革、人口老龄化",
+    desc: "创新药、医疗器械国产化、医疗服务与健康管理持续增长，对高学历人才需求集中。",
+    majors: ["药学", "生物制药", "生物医学工程", "临床医学", "护理学"]
+  },
+  {
+    name: "低空经济与航空航天", heat: "高", policy: "低空经济写入政府工作报告、商业航天",
+    desc: "无人机、eVTOL、商业航天是新兴增长点，航空院所与头部企业是主要用人方。",
+    majors: ["飞行器设计与工程", "航空宇航科学与技术", "自动化", "电子信息工程", "通信工程"]
+  },
+  {
+    name: "智能制造与机器人", heat: "较高", policy: "制造业数字化转型、人形机器人",
+    desc: "工业机器人、智能产线改造带来复合型工程人才需求，懂控制 + 懂软件的人最吃香。",
+    majors: ["自动化", "机器人工程", "机械设计制造及其自动化", "电气工程及其自动化", "计算机科学与技术"]
+  },
+  {
+    name: "数据要素与网络安全", heat: "高", policy: "数据要素市场化、数据安全法",
+    desc: "数据合规、安全运营、隐私计算成为企业刚需，安全类岗位供给长期不足。",
+    majors: ["信息安全", "网络空间安全", "计算机科学与技术", "法学（数据合规方向）"]
+  },
+  {
+    name: "银发经济与康养服务", heat: "较高", policy: "积极应对人口老龄化国家战略",
+    desc: "养老服务、康复医疗、老年健康管理需求快速增长，但行业薪资水平尚未完全跟上。",
+    majors: ["护理学", "康复治疗学", "社会工作", "健康服务与管理", "临床医学"]
+  }
+];
+
+
+/* ===== universities-985.js ===== */
+window.GK_UNIVERSITIES_985 = [
+  { id:"pku", name:"北京大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"综合", featureSubjects:"哲学、理论经济学、应用经济学、数学、物理学、化学、中国语言文学", topMajors:"计算机科学与技术、临床医学、法学、经济学、工商管理", environment:"未名湖与博雅塔交相辉映，园林式校园环境优美，人文底蕴与学术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴，住宿费约1200元/年（参考）", canteen:"校内设多个食堂，菜品丰富，口味覆盖南北，价格较为实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业相对宽松，大一末可提出申请（参考）", baoyan:"约50%（参考）", employment:"约98%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：北大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"thu", name:"清华大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"数学、物理学、化学、计算机科学与技术、机械工程、电子科学与技术、材料科学与工程、建筑学", topMajors:"计算机科学与技术、电子信息类、建筑学、经济与金融、自动化", environment:"清华园古典建筑与现代场馆交融，校园面积大，学习与科研氛围浓厚", dorm:"本科多为4人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量多，菜品种类齐全，整体价格较实惠", tuition:"普通类专业约5000元/年（参考）", transfer:"转专业需通过考核，大一末可申请（参考）", baoyan:"约50%（参考）", employment:"约98%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：清华；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ruc", name:"中国人民大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"综合", featureSubjects:"理论经济学、应用经济学、法学、社会学、新闻传播学、统计学、工商管理、政治学", topMajors:"法学、经济学、金融学、新闻学、工商管理", environment:"校园紧凑精致，以人文社科见长，学术讲座与社团活动丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂口味多样，价格适中，就餐较为便利", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定考核，大一末可申请（参考）", baoyan:"约35%（参考）", employment:"约97%（参考）", genderRatio:"女生比例略高（参考）", note:"常用简称：人大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"buaa", name:"北京航空航天大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"航空宇航科学与技术、仪器科学与技术、材料科学与工程、控制科学与工程、软件工程、力学", topMajors:"飞行器设计与工程、计算机科学与技术、电子信息工程、自动化", environment:"沙河与学院路校区并行，航空航天特色鲜明，科研氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂选择较多，口味偏北方，价格适中", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业按学业成绩申请，大一末可提出（参考）", baoyan:"约30%（参考）", employment:"约97%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北航；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bit", name:"北京理工大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"兵器科学与技术、材料科学与工程、控制科学与工程、机械工程、信息与通信工程、光学工程", topMajors:"车辆工程、计算机科学与技术、电子信息工程、自动化", environment:"中关村与良乡校区并行，理工科特色突出，实验条件较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂菜品丰富，价格实惠，就餐选择较多", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业按学院要求申请，大一末可提出（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北理工；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cau", name:"中国农业大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"农林", featureSubjects:"农业工程、食品科学与工程、作物学、畜牧学、兽医学、生物学、农业资源与环境", topMajors:"食品科学与工程、动物医学、农学、生物科学", environment:"校园绿化较好，农业与生命科学特色鲜明，科研平台丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格较为亲民", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约95%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：中农大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bnu", name:"北京师范大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"师范", featureSubjects:"教育学、心理学、中国语言文学、地理学、数学、环境科学与工程、历史学", topMajors:"教育学、心理学、汉语言文学、数学与应用数学", environment:"以教师教育见长，人文气息浓厚，校园文化与学生活动丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂口味多样，价格适中，就餐较为方便", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约30%（参考）", employment:"约96%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：北师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"muc", name:"中央民族大学", tags:["985","211","双一流"], province:"北京", city:"北京", type:"民族", featureSubjects:"民族学、中国语言文学、社会学、音乐与舞蹈学、美术学", topMajors:"民族学、法学、汉语言文学、舞蹈学", environment:"民族特色鲜明，多民族学生共处，校园文化多元包容", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内有清真食堂等多个食堂，口味兼顾各族饮食习惯", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业按学院规定申请，大一末可提出（参考）", baoyan:"约20%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：民大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nankai", name:"南开大学", tags:["985","211","双一流"], province:"天津", city:"天津", type:"综合", featureSubjects:"理论经济学、应用经济学、数学、化学、统计学、历史学、工商管理", topMajors:"金融学、数学与应用数学、化学、经济学", environment:"八里台与津南校区并行，人文与理科并重，学术氛围纯正", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：南开；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"tju", name:"天津大学", tags:["985","211","双一流"], province:"天津", city:"天津", type:"理工", featureSubjects:"化学工程与技术、仪器科学与技术、光学工程、建筑学、水利工程、材料科学与工程、管理科学与工程", topMajors:"化学工程与工艺、建筑学、土木工程、电气工程及其自动化", environment:"卫津路与北洋园校区并行，工科底蕴深厚，实验与实践条件好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量多，菜品丰富，整体价格较实惠", tuition:"普通类专业约5000-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：天大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"dlut", name:"大连理工大学", tags:["985","211","双一流"], province:"辽宁", city:"大连", type:"理工", featureSubjects:"力学、化学工程与技术、土木工程、机械工程、船舶与海洋工程、环境科学与工程", topMajors:"化学工程与工艺、机械设计制造及其自动化、土木工程、软件工程", environment:"凌水主校区依山傍海，工科氛围浓厚，城市气候宜人", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂选择较多，海鲜与北方菜兼有，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定申请，大一末可提出（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：大工；另有盘锦校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"neu", name:"东北大学", tags:["985","211","双一流"], province:"辽宁", city:"沈阳", type:"理工", featureSubjects:"控制科学与工程、冶金工程、材料科学与工程、计算机科学与技术、矿业工程", topMajors:"自动化、冶金工程、计算机科学与技术、材料科学与工程", environment:"南湖与浑南校区并行，工科传统深厚，产学研结合紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按成绩考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：东大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"jlu", name:"吉林大学", tags:["985","211","双一流"], province:"吉林", city:"长春", type:"综合", featureSubjects:"化学、地质资源与地质工程、考古学、数学、兽医学、法学、机械工程", topMajors:"化学、法学、临床医学、车辆工程", environment:"校园分布于长春多个校区，学科门类齐全，规模较大", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"各校区均设食堂，菜品丰富，价格偏实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：吉大；校区较多，分布长春多处；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hit", name:"哈尔滨工业大学", tags:["985","211","双一流"], province:"黑龙江", city:"哈尔滨", type:"理工", featureSubjects:"力学、机械工程、材料科学与工程、控制科学与工程、计算机科学与技术、环境科学与工程、土木工程", topMajors:"计算机科学与技术、自动化、材料科学与工程、飞行器设计与工程", environment:"主校区位于哈尔滨，冬季寒冷，工科底蕴深厚，航天特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：哈工大；另设威海、深圳校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"fudan", name:"复旦大学", tags:["985","211","双一流"], province:"上海", city:"上海", type:"综合", featureSubjects:"哲学、理论经济学、政治学、中国语言文学、数学、基础医学、临床医学、新闻传播学", topMajors:"临床医学、经济学、数学与应用数学、新闻学", environment:"邯郸、江湾等校区并行，综合性强，学术与人文氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味丰富，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约40%（参考）", employment:"约97%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：复旦；校区较多，分布上海多处；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"tongji", name:"同济大学", tags:["985","211","双一流"], province:"上海", city:"上海", type:"理工", featureSubjects:"建筑学、土木工程、环境科学与工程、城乡规划学、测绘科学与技术、设计学、交通运输工程", topMajors:"建筑学、土木工程、城乡规划、车辆工程", environment:"四平路主校区与嘉定校区并行，土木建筑与设计特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约30%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：同济；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"sjtu", name:"上海交通大学", tags:["985","211","双一流"], province:"上海", city:"上海", type:"综合", featureSubjects:"机械工程、船舶与海洋工程、临床医学、生物学、工商管理、材料科学与工程、电气工程", topMajors:"临床医学、电子信息类、机械工程、经济学", environment:"闵行主校区面积大，设施完善，工科与医科实力突出", dorm:"本科多为4人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量众多，菜品种类齐全，价格实惠", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约35%（参考）", employment:"约98%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：上交；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ecnu", name:"华东师范大学", tags:["985","211","双一流"], province:"上海", city:"上海", type:"师范", featureSubjects:"教育学、心理学、中国语言文学、地理学、统计学、数学、软件工程", topMajors:"教育学、心理学、汉语言文学、软件工程", environment:"中山北路与闵行校区并行，师范特色鲜明，人文气息浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味多样，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：华东师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nju", name:"南京大学", tags:["985","211","双一流"], province:"江苏", city:"南京", type:"综合", featureSubjects:"中国语言文学、物理学、化学、天文学、地质学、图书情报与档案管理、计算机科学与技术", topMajors:"物理学、计算机科学与技术、化学、汉语言文学", environment:"仙林与鼓楼校区并行，基础学科底蕴深厚，学术氛围宁静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约35%（参考）", employment:"约97%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：南大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"seu", name:"东南大学", tags:["985","211","双一流"], province:"江苏", city:"南京", type:"综合", featureSubjects:"建筑学、土木工程、电子科学与技术、信息与通信工程、生物医学工程、交通运输工程、艺术学理论", topMajors:"建筑学、电子信息类、土木工程、计算机科学与技术", environment:"四牌楼、九龙湖等校区并行，建筑与电子信息特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏南方，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：东大（东南）；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"zju", name:"浙江大学", tags:["985","211","双一流"], province:"浙江", city:"杭州", type:"综合", featureSubjects:"农业资源与环境、光学工程、计算机科学与技术、控制科学与工程、临床医学、园艺学、化学工程与技术", topMajors:"计算机科学与技术、临床医学、电气工程及其自动化、软件工程", environment:"紫金港主校区面积大，学科门类齐全，创新创业氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量众多，菜品丰富，价格实惠", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约30%（参考）", employment:"约97%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：浙大；另有海宁等校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ustc", name:"中国科学技术大学", tags:["985","211","双一流"], province:"安徽", city:"合肥", type:"理工", featureSubjects:"物理学、化学、数学、天文学、地球物理学、核科学与技术、计算机科学与技术", topMajors:"物理学、计算机科学与技术、数学与应用数学、电子信息类", environment:"校园精致安静，基础科研氛围浓厚，学术要求严格", dorm:"本科多为4人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格实惠", tuition:"普通类专业约4800-5500元/年（参考）", transfer:"转专业相对自由，大一末可申请（参考）", baoyan:"约40%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：中科大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"xmu", name:"厦门大学", tags:["985","211","双一流"], province:"福建", city:"厦门", type:"综合", featureSubjects:"经济学、工商管理、海洋科学、化学、统计学、法学、新闻传播学", topMajors:"会计学、经济学、金融学、化学", environment:"思明校区依山傍海，风景优美，人文与学术氛围兼具", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，海鲜与闽南口味兼有，价格适中", tuition:"普通类专业约4600-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：厦大；另有翔安校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"sdu", name:"山东大学", tags:["985","211","双一流"], province:"山东", city:"济南", type:"综合", featureSubjects:"中国语言文学、数学、临床医学、材料科学与工程、控制科学与工程、药学", topMajors:"临床医学、数学与应用数学、计算机科学与技术、法学", environment:"校区分布于济南多处，学科门类齐全，办学规模较大", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：山大；设有济南多个校区及威海、青岛校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ouc", name:"中国海洋大学", tags:["985","211","双一流"], province:"山东", city:"青岛", type:"综合", featureSubjects:"海洋科学、水产、食品科学与工程、大气科学、环境科学与工程、生物学", topMajors:"海洋科学、水产养殖学、食品科学与工程、大气科学", environment:"崂山、鱼山等校区并行，滨海特色鲜明，海洋学科优势突出", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，海鲜与北方口味兼有，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：海大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"whu", name:"武汉大学", tags:["985","211","双一流"], province:"湖北", city:"武汉", type:"综合", featureSubjects:"测绘科学与技术、法学、图书情报与档案管理、水利工程、生物学、新闻传播学、地球物理学", topMajors:"测绘工程、法学、遥感科学与技术、临床医学", environment:"珞珈山与东湖水相映，校园风景优美，人文与学术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：武大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hust", name:"华中科技大学", tags:["985","211","双一流"], province:"湖北", city:"武汉", type:"综合", featureSubjects:"机械工程、光学工程、生物医学工程、公共卫生与预防医学、电气工程、计算机科学与技术、临床医学", topMajors:"临床医学、机械设计制造及其自动化、电气工程及其自动化、计算机科学与技术", environment:"喻家山麓校园面积大，工科与医科并重，产学研结合紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量众多，菜品丰富，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：华科；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hnu", name:"湖南大学", tags:["985","211","双一流"], province:"湖南", city:"长沙", type:"综合", featureSubjects:"化学、机械工程、土木工程、工商管理、设计学、电气工程、环境科学与工程", topMajors:"机械设计制造及其自动化、土木工程、车辆工程、金融学", environment:"岳麓山下、湘江之滨，校园无围墙，人文与工科特色兼具", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，湘菜口味突出，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：湖大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"csu", name:"中南大学", tags:["985","211","双一流"], province:"湖南", city:"长沙", type:"综合", featureSubjects:"冶金工程、矿业工程、材料科学与工程、临床医学、交通运输工程、护理学、机械工程", topMajors:"临床医学、材料科学与工程、冶金工程、交通运输", environment:"校区分布于长沙多处，工科与医科实力突出，实验平台完善", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，湘菜口味突出，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：中南；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nudt", name:"国防科技大学", tags:["985","211","双一流"], province:"湖南", city:"长沙", type:"军事", featureSubjects:"计算机科学与技术、信息与通信工程、航空宇航科学与技术、管理科学与工程、光学工程、软件工程", topMajors:"计算机科学与技术、软件工程、信息与通信工程、航空航天工程", environment:"军队院校管理严格，科研与工程实践条件优越，氛围严谨", dorm:"学员宿舍实行军事化管理，多为集体住宿，条件因校区而异（参考）", canteen:"校内食堂按军队标准保障，营养搭配均衡（参考）", tuition:"军人学员按规定享受供给制待遇（参考）", transfer:"无军籍学员转专业按学校规定执行（参考）", baoyan:"约30%（参考）", employment:"以军队分配与定向就业为主（参考）", genderRatio:"男生比例明显偏高（参考）", note:"常用简称：国防科大；军队院校，报考需政审体检，招生要求特殊；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"sysu", name:"中山大学", tags:["985","211","双一流"], province:"广东", city:"广州", type:"综合", featureSubjects:"临床医学、基础医学、药学、工商管理、数学、生态学、哲学、中国语言文学", topMajors:"临床医学、工商管理、经济学、计算机科学与技术", environment:"广州、珠海、深圳多校区办学，综合性强，岭南特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，粤菜口味突出，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：中大；设有广州、珠海、深圳校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"scut", name:"华南理工大学", tags:["985","211","双一流"], province:"广东", city:"广州", type:"理工", featureSubjects:"轻工技术与工程、食品科学与工程、材料科学与工程、化学工程与技术、建筑学、环境科学与工程", topMajors:"建筑学、计算机科学与技术、食品科学与工程、材料科学与工程", environment:"五山与大学城校区并行，工科特色鲜明，产学研结合紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，粤菜与各地口味兼有，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：华南理工；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"scu", name:"四川大学", tags:["985","211","双一流"], province:"四川", city:"成都", type:"综合", featureSubjects:"口腔医学、材料科学与工程、中国语言文学、数学、临床医学、护理学、化学", topMajors:"口腔医学、临床医学、汉语言文学、计算机科学与技术", environment:"望江、华西等校区并行，学科门类齐全，医学与人文特色兼具", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川菜口味突出，价格实惠", tuition:"普通类专业约4800-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：川大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"uestc", name:"电子科技大学", tags:["985","211","双一流"], province:"四川", city:"成都", type:"理工", featureSubjects:"电子科学与技术、信息与通信工程、计算机科学与技术、光学工程、仪器科学与技术", topMajors:"电子信息工程、通信工程、计算机科学与技术、微电子科学与工程", environment:"清水河与沙河校区并行，电子信息特色鲜明，科研氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约4900-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：电子科大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cqu", name:"重庆大学", tags:["985","211","双一流"], province:"重庆", city:"重庆", type:"综合", featureSubjects:"电气工程、机械工程、仪器科学与技术、土木工程、建筑学、城乡规划学、动力工程及工程热物理", topMajors:"电气工程及其自动化、土木工程、建筑学、机械设计制造及其自动化", environment:"校区分布于重庆多处，山地校园特色鲜明，工科底蕴深厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川渝口味突出，价格实惠", tuition:"普通类专业约4600-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：重大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"xjtu", name:"西安交通大学", tags:["985","211","双一流"], province:"陕西", city:"西安", type:"综合", featureSubjects:"电气工程、动力工程及工程热物理、机械工程、工商管理、力学、管理科学与工程、核科学与技术", topMajors:"电气工程及其自动化、能源与动力工程、机械工程、临床医学", environment:"兴庆、创新港等校区并行，工科底蕴深厚，西迁精神传承", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，陕西口味突出，价格实惠", tuition:"普通类专业约4700-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约25%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：西交；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nwpu", name:"西北工业大学", tags:["985","211","双一流"], province:"陕西", city:"西安", type:"理工", featureSubjects:"航空宇航科学与技术、材料科学与工程、机械工程、控制科学与工程、船舶与海洋工程、计算机科学与技术", topMajors:"飞行器设计与工程、材料科学与工程、计算机科学与技术、自动化", environment:"友谊与长安校区并行，航空、航天、航海特色鲜明，氛围严谨", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约4700-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约22%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：西工大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nwafu", name:"西北农林科技大学", tags:["985","211","双一流"], province:"陕西", city:"咸阳", type:"农林", featureSubjects:"农学、植物保护、园艺学、林学、农业工程、食品科学与工程、畜牧学", topMajors:"农学、园艺、动物医学、食品科学与工程", environment:"主校区位于杨凌，校园开阔安静，农林科研试验条件优越", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：西农；主校区位于陕西杨凌；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"lzu", name:"兰州大学", tags:["985","211","双一流"], province:"甘肃", city:"兰州", type:"综合", featureSubjects:"化学、大气科学、生态学、草学、数学、地理学、物理学", topMajors:"化学、大气科学、草业科学、临床医学", environment:"城关与榆中校区并行，基础学科底蕴深厚，学术氛围宁静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，西北口味突出，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：兰大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+];
+
+
+/* ===== universities-211a.js ===== */
+window.GK_UNIVERSITIES_211A = [
+  { id:"bjtu", name:"北京交通大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"系统科学、交通运输工程、信息与通信工程、土木工程、管理科学与工程、计算机科学与技术", topMajors:"交通运输、通信工程、计算机科学与技术、土木工程", environment:"海淀主校区交通便利，轨道交通特色鲜明，工科氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北交大；另有威海校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bjut", name:"北京工业大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"土木工程、材料科学与工程、环境科学与工程、光学工程、信息与通信工程、计算机科学与技术", topMajors:"土木工程、计算机科学与技术、材料科学与工程、软件工程", environment:"平乐园主校区位于北京城区，工科特色鲜明，区位条件好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北工大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ustb", name:"北京科技大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"冶金工程、材料科学与工程、矿业工程、科学技术史、机械工程、计算机科学与技术", topMajors:"材料科学与工程、冶金工程、计算机科学与技术、自动化", environment:"学院路校区环境整洁，冶金与材料特色鲜明，工科底蕴深厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北科大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"buct", name:"北京化工大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"化学工程与技术、材料科学与工程、化学、环境科学与工程、控制科学与工程", topMajors:"化学工程与工艺、高分子材料与工程、材料科学与工程、制药工程", environment:"东、北、昌平校区并行，化工与材料特色鲜明，实验条件较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北化；设有东、北、昌平校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bupt", name:"北京邮电大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"信息与通信工程、计算机科学与技术、电子科学与技术、网络空间安全、软件工程", topMajors:"通信工程、计算机科学与技术、电子信息工程、软件工程", environment:"西土城与沙河校区并行，信息通信特色鲜明，就业口碑突出", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约96%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北邮；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bjfu", name:"北京林业大学", tags:["211","双一流"], province:"北京", city:"北京", type:"农林", featureSubjects:"林学、风景园林学、生物学、林业工程、生态学、草学", topMajors:"风景园林、林学、园林、木材科学与工程", environment:"学院路校区绿化良好，林学与风景园林特色鲜明，氛围宁静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：北林；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bucm", name:"北京中医药大学", tags:["211","双一流"], province:"北京", city:"北京", type:"医药", featureSubjects:"中医学、中药学、中西医结合、护理学", topMajors:"中医学、中药学、针灸推拿学、中西医临床医学", environment:"和平街与良乡校区并行，中医药特色鲜明，临床实践资源丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品兼顾养生与大众口味，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：北中医；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bfsu", name:"北京外国语大学", tags:["211","双一流"], province:"北京", city:"北京", type:"语言", featureSubjects:"外国语言文学、英语语言文学、翻译、法语语言文学、德语语言文学", topMajors:"英语、翻译、西班牙语、法语、日语", environment:"校园紧凑，外语语种齐全，国际化氛围浓厚，语言环境好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"女生比例明显偏高（参考）", note:"常用简称：北外；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cuc", name:"中国传媒大学", tags:["211","双一流"], province:"北京", city:"北京", type:"语言", featureSubjects:"新闻传播学、戏剧与影视学、信息与通信工程、设计学、艺术学理论", topMajors:"播音与主持艺术、广播电视编导、新闻学、广告学", environment:"校园传媒特色鲜明，影视与新闻实践资源丰富，活动较多", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：中传；部分专业需参加艺术类校考；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cufe", name:"中央财经大学", tags:["211","双一流"], province:"北京", city:"北京", type:"财经", featureSubjects:"应用经济学、理论经济学、工商管理、统计学、法学", topMajors:"金融学、会计学、经济学、财政学", environment:"学院南路与沙河校区并行，财经特色鲜明，学术与实习资源较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：中财；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"uibe", name:"对外经济贸易大学", tags:["211","双一流"], province:"北京", city:"北京", type:"财经", featureSubjects:"应用经济学、工商管理、法学、外国语言文学、统计学", topMajors:"国际经济与贸易、金融学、会计学、法学", environment:"校园紧凑，国际化与经贸特色鲜明，外语与商科氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：贸大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"bsu", name:"北京体育大学", tags:["211","双一流"], province:"北京", city:"北京", type:"综合", featureSubjects:"体育学、运动人体科学、运动训练学、民族传统体育学、体育教育训练学", topMajors:"运动训练、体育教育、运动人体科学、武术与民族传统体育", environment:"以体育学科为主，训练场馆与运动设施齐全，体育氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂兼顾训练营养需求，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：北体；以体育学科为主，部分专业需体育测试；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ccom", name:"中央音乐学院", tags:["211","双一流"], province:"北京", city:"北京", type:"艺术", featureSubjects:"音乐与舞蹈学、作曲与作曲技术理论、音乐表演、音乐学", topMajors:"音乐表演、作曲与作曲技术理论、音乐学、音乐教育", environment:"专业音乐院校，琴房与演出厅资源丰富，艺术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂规模适中，菜品多样，价格适中", tuition:"艺术类专业约10000-15000元/年（参考）", transfer:"转专业按学院规定，需专业考核（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：中央音乐学院；招生以专业校考为主；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cupl", name:"中国政法大学", tags:["211","双一流"], province:"北京", city:"北京", type:"政法", featureSubjects:"法学、政治学、马克思主义理论、理论经济学", topMajors:"法学、政治学与行政学、国际政治、侦查学", environment:"昌平与海淀校区并行，法学特色鲜明，法学学术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：法大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ncepu", name:"华北电力大学", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"电气工程、动力工程及工程热物理、控制科学与工程、管理科学与工程、核科学与技术", topMajors:"电气工程及其自动化、能源与动力工程、自动化、新能源科学与工程", environment:"北京与保定两校区办学，电力特色鲜明，行业联系紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约95%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：华电；设有北京、保定两校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cup", name:"中国石油大学（北京）", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"石油与天然气工程、地质资源与地质工程、化学工程与技术、地质学", topMajors:"石油工程、油气储运工程、化学工程与工艺、地质工程", environment:"昌平校区环境整洁，石油与地质特色鲜明，行业联系紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：石大（北京）；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cugb", name:"中国地质大学（北京）", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"地质资源与地质工程、地质学、石油与天然气工程、地球物理学、测绘科学与技术", topMajors:"地质学、资源勘查工程、地质工程、地球物理学", environment:"学院路校区交通便利，地质与资源特色鲜明，野外实践较多", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：地大（北京）；另有武汉校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cumtb", name:"中国矿业大学（北京）", tags:["211","双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"矿业工程、安全科学与工程、地质资源与地质工程、测绘科学与技术、土木工程", topMajors:"采矿工程、安全工程、地质工程、测绘工程", environment:"学院路校区交通便利，矿业与安全特色鲜明，行业联系紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：矿大（北京）；另有徐州校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"pumc", name:"北京协和医学院", tags:["211","双一流"], province:"北京", city:"北京", type:"医药", featureSubjects:"临床医学、基础医学、药学、生物学、公共卫生与预防医学、护理学", topMajors:"临床医学、药学、护理学、医学实验技术", environment:"医学精英教育特色鲜明，临床与科研资源优质，学术要求严格", dorm:"本科阶段多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂规模适中，菜品兼顾营养与大众口味（参考）", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"招生规模较小，转专业按学校规定执行（参考）", baoyan:"约30%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：协和；与清华大学合作办学，又称清华大学医学部；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"tmu", name:"天津医科大学", tags:["211","双一流"], province:"天津", city:"天津", type:"医药", featureSubjects:"临床医学、口腔医学、药学、公共卫生与预防医学、基础医学、护理学", topMajors:"临床医学、口腔医学、药学、麻醉学", environment:"气象台路与广东路校区并行，医学教育历史悠久，临床资源丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：天医；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hebut", name:"河北工业大学", tags:["211","双一流"], province:"天津", city:"天津", type:"理工", featureSubjects:"电气工程、材料科学与工程、机械工程、化学工程与技术、控制科学与工程", topMajors:"电气工程及其自动化、机械设计制造及其自动化、材料科学与工程、土木工程", environment:"主校区位于天津，另有廊坊分校，工科特色鲜明，区位条件好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：河工大；主管部门为河北省，主校区位于天津；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"tyut", name:"太原理工大学", tags:["211","双一流"], province:"山西", city:"太原", type:"理工", featureSubjects:"化学工程与技术、材料科学与工程、矿业工程、机械工程、土木工程", topMajors:"化学工程与工艺、材料科学与工程、采矿工程、机械设计制造及其自动化", environment:"校区分布于太原，工科底蕴深厚，煤炭与材料特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，山西口味突出，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约93%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：太原理工；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"imu", name:"内蒙古大学", tags:["211","双一流"], province:"内蒙古", city:"呼和浩特", type:"综合", featureSubjects:"生物学、生态学、中国语言文学、民族学、物理学", topMajors:"生物科学、生态学、蒙古语、汉语言文学", environment:"呼和浩特主校区环境安静，草原生态与民族学特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，蒙餐与北方口味兼有，价格实惠", tuition:"普通类专业约4000-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：内大；另有满洲里校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"dlmu", name:"大连海事大学", tags:["211","双一流"], province:"辽宁", city:"大连", type:"理工", featureSubjects:"交通运输工程、船舶与海洋工程、信息与通信工程、法学、环境科学与工程", topMajors:"航海技术、轮机工程、交通运输、法学", environment:"位于大连，航海特色鲜明，临海环境适宜，部分专业半军事化管理", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，海鲜与北方口味兼有，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：大连海大；航海类专业对体检有要求；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"lnu", name:"辽宁大学", tags:["211","双一流"], province:"辽宁", city:"沈阳", type:"综合", featureSubjects:"应用经济学、理论经济学、法学、中国语言文学、统计学", topMajors:"经济学、金融学、法学、汉语言文学", environment:"崇山、蒲河等校区并行，人文社科特色鲜明，校园氛围宁静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约92%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：辽大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nenu", name:"东北师范大学", tags:["211","双一流"], province:"吉林", city:"长春", type:"师范", featureSubjects:"教育学、马克思主义理论、世界史、统计学、化学、中国语言文学", topMajors:"教育学、汉语言文学、数学与应用数学、英语", environment:"自由与净月校区并行，师范特色鲜明，教师教育基础扎实", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：东北师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ybu", name:"延边大学", tags:["211","双一流"], province:"吉林", city:"延吉", type:"综合", featureSubjects:"外国语言文学、中国语言文学、民族学、药学", topMajors:"朝鲜语、汉语言文学、临床医学、教育学", environment:"位于延边朝鲜族自治州，双语与民族特色鲜明，校园环境安静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，朝鲜族风味与北方口味兼有，价格实惠", tuition:"普通类专业约4000-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：延大；位于吉林延吉；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hrbeu", name:"哈尔滨工程大学", tags:["211","双一流"], province:"黑龙江", city:"哈尔滨", type:"理工", featureSubjects:"船舶与海洋工程、核科学与技术、控制科学与工程、水声工程、动力工程及工程热物理", topMajors:"船舶与海洋工程、水声工程、核工程与核技术、自动化", environment:"位于哈尔滨，船舶、海洋与核特色鲜明，冬季寒冷，科研氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，口味偏北方，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：哈工程；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"neau", name:"东北农业大学", tags:["211","双一流"], province:"黑龙江", city:"哈尔滨", type:"农林", featureSubjects:"农业工程、食品科学与工程、畜牧学、兽医学、作物学", topMajors:"食品科学与工程、农学、动物医学、农业机械化及其自动化", environment:"位于哈尔滨，农业与食品特色鲜明，试验实习基地条件较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，东北口味突出，价格实惠", tuition:"普通类专业约4500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约14%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：东北农大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nefu", name:"东北林业大学", tags:["211","双一流"], province:"黑龙江", city:"哈尔滨", type:"农林", featureSubjects:"林学、林业工程、生态学、生物学、风景园林学", topMajors:"林学、木材科学与工程、园林、森林保护", environment:"位于哈尔滨，林学与林业工程特色鲜明，校园绿化良好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，东北口味突出，价格实惠", tuition:"普通类专业约4500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约14%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：东北林大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ecust", name:"华东理工大学", tags:["211","双一流"], province:"上海", city:"上海", type:"理工", featureSubjects:"化学工程与技术、材料科学与工程、化学、控制科学与工程、环境科学与工程", topMajors:"化学工程与工艺、材料科学与工程、制药工程、自动化", environment:"徐汇与奉贤校区并行，化工与材料特色鲜明，工科底蕴深厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：华理；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"dhu", name:"东华大学", tags:["211","双一流"], province:"上海", city:"上海", type:"理工", featureSubjects:"纺织科学与工程、材料科学与工程、设计学、化学、机械工程", topMajors:"纺织工程、服装设计与工程、材料科学与工程、设计学", environment:"松江与延安路校区并行，纺织与设计特色鲜明，时尚氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：东华；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"sufe", name:"上海财经大学", tags:["211","双一流"], province:"上海", city:"上海", type:"财经", featureSubjects:"应用经济学、工商管理、理论经济学、统计学、法学", topMajors:"金融学、会计学、经济学、财务管理", environment:"校园位于上海城区，财经特色鲜明，实习与就业资源丰富", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：上财；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"shisu", name:"上海外国语大学", tags:["211","双一流"], province:"上海", city:"上海", type:"语言", featureSubjects:"外国语言文学、英语语言文学、翻译、日语语言文学、俄语语言文学", topMajors:"英语、翻译、西班牙语、日语、国际经济与贸易", environment:"虹口与松江校区并行，外语语种齐全，国际化氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例明显偏高（参考）", note:"常用简称：上外；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"shu", name:"上海大学", tags:["211","双一流"], province:"上海", city:"上海", type:"综合", featureSubjects:"社会学、美术学、材料科学与工程、机械工程、冶金工程、信息与通信工程", topMajors:"社会学、计算机科学与技术、通信工程、工商管理", environment:"宝山、延长等校区并行，学科门类齐全，理工与人文兼具", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：上大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"smmu", name:"海军军医大学", tags:["211","双一流"], province:"上海", city:"上海", type:"军事", featureSubjects:"基础医学、临床医学、药学、公共卫生与预防医学、护理学、生物学", topMajors:"临床医学、药学、护理学、麻醉学", environment:"军队医学院校，医学与军事特色兼具，临床与科研资源优质", dorm:"学员宿舍实行军事化管理，多为集体住宿，条件因校区而异（参考）", canteen:"校内食堂按军队标准保障，营养搭配均衡（参考）", tuition:"军人学员按规定享受供给制待遇（参考）", transfer:"无军籍学员转专业按学校规定执行（参考）", baoyan:"约25%（参考）", employment:"以军队分配与定向就业为主（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：海军军医大学；原第二军医大学，军队院校，报考需政审体检；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"suda", name:"苏州大学", tags:["211","双一流"], province:"江苏", city:"苏州", type:"综合", featureSubjects:"材料科学与工程、设计学、光学工程、纺织科学与工程、法学、临床医学", topMajors:"临床医学、材料科学与工程、法学、纺织工程", environment:"天赐庄等校区并行，校园环境优美，综合性强，区位条件好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，苏帮菜与各地口味兼有，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：苏大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nuaa", name:"南京航空航天大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"理工", featureSubjects:"航空宇航科学与技术、力学、机械工程、控制科学与工程、信息与通信工程", topMajors:"飞行器设计与工程、自动化、机械工程、计算机科学与技术", environment:"明故宫与将军路校区并行，航空航天特色鲜明，科研氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：南航；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"njust", name:"南京理工大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"理工", featureSubjects:"兵器科学与技术、材料科学与工程、化学工程与技术、控制科学与工程、光学工程", topMajors:"武器系统与工程、材料科学与工程、电子信息工程、自动化", environment:"紫金与孝陵卫校区并行，兵器与工科特色鲜明，科研平台完善", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：南理工；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+];
+
+
+/* ===== universities-211b.js ===== */
+window.GK_UNIVERSITIES_211B = [
+  { id:"cumt", name:"中国矿业大学", tags:["211","双一流"], province:"江苏", city:"徐州", type:"理工", featureSubjects:"矿业工程、安全科学与工程、地质资源与地质工程、测绘科学与技术、土木工程", topMajors:"采矿工程、安全工程、地质工程、电气工程及其自动化", environment:"主校区位于江苏徐州，矿业与安全特色鲜明，校园面积较大", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：矿大；主校区位于江苏徐州，另设北京校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hhu", name:"河海大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"理工", featureSubjects:"水利工程、环境科学与工程、土木工程、力学、地质资源与地质工程", topMajors:"水利水电工程、土木工程、港口航道与海岸工程、环境工程", environment:"西康路与江宁校区并行，水利特色鲜明，行业联系紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：河海；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"jiangnan", name:"江南大学", tags:["211","双一流"], province:"江苏", city:"无锡", type:"综合", featureSubjects:"食品科学与工程、轻工技术与工程、设计学、控制科学与工程、化学工程与技术", topMajors:"食品科学与工程、生物工程、工业设计、物联网工程", environment:"位于江苏无锡，蠡湖校区环境优美，食品与轻工特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：江大；位于江苏无锡；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"njau", name:"南京农业大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"农林", featureSubjects:"作物学、农业资源与环境、植物保护、农林经济管理、食品科学与工程、园艺学", topMajors:"农学、植物保护、动物医学、食品科学与工程", environment:"卫岗与浦口校区并行，农业与生命科学特色鲜明，科研基地完善", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：南农；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cpu", name:"中国药科大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"医药", featureSubjects:"药学、中药学、生物学、化学、基础医学", topMajors:"药学、中药学、药物制剂、临床药学", environment:"江宁校区为主，药学特色鲜明，实验与制药实训条件较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：药大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"njnu", name:"南京师范大学", tags:["211","双一流"], province:"江苏", city:"南京", type:"师范", featureSubjects:"教育学、中国语言文学、地理学、法学、美术学、心理学", topMajors:"教育学、汉语言文学、英语、地理科学", environment:"仙林与随园校区并行，随园校区古典优美，师范特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：南师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ahu", name:"安徽大学", tags:["211","双一流"], province:"安徽", city:"合肥", type:"综合", featureSubjects:"材料科学与工程、计算机科学与技术、法学、中国语言文学、电子科学与技术", topMajors:"计算机科学与技术、法学、电子信息工程、汉语言文学", environment:"磬苑与龙河校区并行，校园环境安静，综合学科设置较齐全", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约14%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：安大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hfut", name:"合肥工业大学", tags:["211","双一流"], province:"安徽", city:"合肥", type:"理工", featureSubjects:"管理科学与工程、机械工程、电气工程、食品科学与工程、计算机科学与技术", topMajors:"车辆工程、机械设计制造及其自动化、电气工程及其自动化、计算机科学与技术", environment:"屯溪路与翡翠湖校区并行，工科特色鲜明，车辆与制造见长", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约16%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：合工大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"fzu", name:"福州大学", tags:["211","双一流"], province:"福建", city:"福州", type:"理工", featureSubjects:"化学、管理科学与工程、土木工程、化学工程与技术、计算机科学与技术", topMajors:"化学、土木工程、化学工程与工艺、计算机科学与技术", environment:"旗山与怡山校区并行，化工与土木特色鲜明，环境较安静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，闽菜口味突出，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：福大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ncu", name:"南昌大学", tags:["211","双一流"], province:"江西", city:"南昌", type:"综合", featureSubjects:"食品科学与工程、材料科学与工程、临床医学、化学、机械工程", topMajors:"食品科学与工程、临床医学、材料科学与工程、土木工程", environment:"前湖主校区面积较大，综合性强，医学与食品特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，赣菜口味突出，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：昌大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"upc", name:"中国石油大学（华东）", tags:["211","双一流"], province:"山东", city:"青岛", type:"理工", featureSubjects:"石油与天然气工程、地质资源与地质工程、化学工程与技术、机械工程", topMajors:"石油工程、油气储运工程、化学工程与工艺、资源勘查工程", environment:"主校区位于山东青岛，石油与地质特色鲜明，海滨环境较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，海鲜与北方口味兼有，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：石大（华东）；主校区位于山东青岛，东营曾设校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"zzu", name:"郑州大学", tags:["211","双一流"], province:"河南", city:"郑州", type:"综合", featureSubjects:"材料科学与工程、化学、临床医学、土木工程、水利工程、化学工程与技术", topMajors:"临床医学、材料科学与工程、化学、土木工程", environment:"主校区位于郑州，办学规模较大，学科门类齐全，综合性强", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格实惠", tuition:"普通类专业约4400-5800元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：郑大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"whut", name:"武汉理工大学", tags:["211","双一流"], province:"湖北", city:"武汉", type:"理工", featureSubjects:"材料科学与工程、船舶与海洋工程、交通运输工程、机械工程、设计学", topMajors:"材料科学与工程、船舶与海洋工程、车辆工程、土木工程", environment:"马房山与余家头校区并行，材料与交通特色鲜明，工科氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约16%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：武理工；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"cug", name:"中国地质大学（武汉）", tags:["211","双一流"], province:"湖北", city:"武汉", type:"理工", featureSubjects:"地质学、地质资源与地质工程、海洋科学、测绘科学与技术、石油与天然气工程", topMajors:"地质学、资源勘查工程、地质工程、勘查技术与工程", environment:"东湖之滨、南望山下，地质与资源特色鲜明，校园环境优美", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：地大（武汉）；另有北京校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hzau", name:"华中农业大学", tags:["211","双一流"], province:"湖北", city:"武汉", type:"农林", featureSubjects:"作物学、园艺学、畜牧学、兽医学、农业资源与环境、食品科学与工程", topMajors:"农学、园艺、动物医学、食品科学与工程", environment:"狮子山下、南湖畔，校园面积大，农林与生命科学特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品丰富，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：华中农大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ccnu", name:"华中师范大学", tags:["211","双一流"], province:"湖北", city:"武汉", type:"师范", featureSubjects:"教育学、政治学、中国语言文学、中国史、数学、物理学", topMajors:"教育学、汉语言文学、英语、数学与应用数学", environment:"桂子山上，校园环境优美，师范特色鲜明，人文气息浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：华中师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"zuel", name:"中南财经政法大学", tags:["211","双一流"], province:"湖北", city:"武汉", type:"财经", featureSubjects:"应用经济学、法学、工商管理、统计学、理论经济学", topMajors:"金融学、会计学、法学、经济学", environment:"南湖与首义校区并行，财经与政法特色兼具，学术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，菜品多样，价格适中", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约18%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：中南大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hunnu", name:"湖南师范大学", tags:["211","双一流"], province:"湖南", city:"长沙", type:"师范", featureSubjects:"教育学、中国语言文学、数学、外国语言文学、地理学", topMajors:"教育学、汉语言文学、英语、数学与应用数学", environment:"岳麓山下、湘江之滨，师范特色鲜明，人文氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，湘菜口味突出，价格实惠", tuition:"普通类专业约4500-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：湖南师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"jnu", name:"暨南大学", tags:["211","双一流"], province:"广东", city:"广州", type:"综合", featureSubjects:"药学、新闻传播学、应用经济学、中国语言文学、生物学", topMajors:"临床医学、新闻学、金融学、会计学", environment:"石牌等校区并行，华侨特色鲜明，境外学生较多，国际氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，粤菜口味突出，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：暨大；招收华侨及港澳台学生较多；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"scnu", name:"华南师范大学", tags:["211","双一流"], province:"广东", city:"广州", type:"师范", featureSubjects:"心理学、教育学、物理学、经济学、体育学", topMajors:"教育学、心理学、计算机科学与技术、汉语言文学", environment:"石牌与大学城校区并行，师范特色鲜明，心理学实力较强", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，粤菜与各地口味兼有，价格适中", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约94%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：华南师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"gxu", name:"广西大学", tags:["211","双一流"], province:"广西", city:"南宁", type:"综合", featureSubjects:"土木工程、农学、材料科学与工程、生物学、轻工技术与工程", topMajors:"土木工程、农学、材料科学与工程、电气工程及其自动化", environment:"位于南宁，校园绿植茂盛，综合性强，亚热带气候特点鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，桂菜与南方口味兼有，价格实惠", tuition:"普通类专业约4200-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：西大（广西）；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"hainanu", name:"海南大学", tags:["211","双一流"], province:"海南", city:"海口", type:"综合", featureSubjects:"作物学、法学、信息与通信工程、生物学、食品科学与工程", topMajors:"农学、法学、计算机科学与技术、食品科学与工程", environment:"位于海口，热带与滨海气候特点鲜明，校园绿化良好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，海南口味与各地菜品兼有，价格实惠", tuition:"普通类专业约4200-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：海大（海南）；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"swu", name:"西南大学", tags:["211","双一流"], province:"重庆", city:"重庆", type:"综合", featureSubjects:"教育学、心理学、作物学、生物学、食品科学与工程、园艺学", topMajors:"教育学、心理学、农学、食品科学与工程", environment:"缙云山下，校园面积大，绿化良好，师范与农科特色兼具", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川渝口味突出，价格实惠", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约16%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：西南大学；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"swjtu", name:"西南交通大学", tags:["211","双一流"], province:"四川", city:"成都", type:"理工", featureSubjects:"交通运输工程、土木工程、机械工程、电气工程、材料科学与工程", topMajors:"土木工程、交通运输、车辆工程、电气工程及其自动化", environment:"犀浦与九里校区并行，轨道交通特色鲜明，工科氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川菜口味突出，价格实惠", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约16%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：西南交大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"sicau", name:"四川农业大学", tags:["211","双一流"], province:"四川", city:"雅安", type:"农林", featureSubjects:"作物学、畜牧学、兽医学、林学、风景园林学、园艺学", topMajors:"农学、动物医学、园林、食品科学与工程", environment:"主校区位于雅安，校园环境清幽，农林与生命科学特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川菜口味突出，价格实惠", tuition:"普通类专业约4400-5800元/年（参考）", transfer:"转专业相对宽松，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：川农；主校区位于四川雅安，另设成都校区；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"swufe", name:"西南财经大学", tags:["211","双一流"], province:"四川", city:"成都", type:"财经", featureSubjects:"应用经济学、理论经济学、工商管理、统计学、法学", topMajors:"金融学、会计学、经济学、财务管理", environment:"柳林与光华校区并行，财经特色鲜明，学术与实习资源较好", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，川菜口味突出，价格适中", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：西财；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"gzu", name:"贵州大学", tags:["211","双一流"], province:"贵州", city:"贵阳", type:"综合", featureSubjects:"植物保护、农业资源与环境、林学、土木工程、生物学", topMajors:"农学、土木工程、计算机科学与技术、酿酒工程", environment:"位于贵阳，校园面积较大，山地气候特点鲜明，综合学科较齐全", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，黔菜口味突出，价格实惠", tuition:"普通类专业约4000-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：贵大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"ynu", name:"云南大学", tags:["211","双一流"], province:"云南", city:"昆明", type:"综合", featureSubjects:"民族学、生态学、生物学、政治学、中国语言文学", topMajors:"生态学、民族学、计算机科学与技术、法学", environment:"呈贡与东陆校区并行，四季如春，民族与生态特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，云南口味与各地菜品兼有，价格实惠", tuition:"普通类专业约4000-5500元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：云大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"utibet", name:"西藏大学", tags:["211","双一流"], province:"西藏", city:"拉萨", type:"综合", featureSubjects:"生态学、中国语言文学、民族学、临床医学", topMajors:"生态学、藏语言文学、汉语言文学、临床医学", environment:"位于拉萨，高原气候特点鲜明，藏族文化氛围浓厚，校园安静", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，藏餐与各地菜品兼有，价格实惠", tuition:"普通类专业约3500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：藏大；位于西藏拉萨，高原环境报考需注意身体条件；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"xidian", name:"西安电子科技大学", tags:["211","双一流"], province:"陕西", city:"西安", type:"理工", featureSubjects:"信息与通信工程、电子科学与技术、计算机科学与技术、网络空间安全、控制科学与工程", topMajors:"通信工程、电子信息工程、计算机科学与技术、微电子科学与工程", environment:"北校区与南校区并行，信息与电子特色鲜明，就业口碑突出", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，陕西口味突出，价格实惠", tuition:"普通类专业约5000-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约20%（参考）", employment:"约95%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：西电；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"chd", name:"长安大学", tags:["211","双一流"], province:"陕西", city:"西安", type:"理工", featureSubjects:"交通运输工程、土木工程、测绘科学与技术、地质资源与地质工程、机械工程", topMajors:"道路桥梁与渡河工程、交通运输、土木工程、车辆工程", environment:"校本部与渭水校区并行，公路交通特色鲜明，行业联系紧密", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，陕西口味突出，价格实惠", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约16%（参考）", employment:"约94%（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：长安大学；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"snnu", name:"陕西师范大学", tags:["211","双一流"], province:"陕西", city:"西安", type:"师范", featureSubjects:"教育学、中国语言文学、地理学、数学、中国史、化学", topMajors:"教育学、汉语言文学、数学与应用数学、英语", environment:"雁塔与长安校区并行，师范特色鲜明，人文与教师教育基础扎实", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，陕西口味突出，价格实惠", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"女生比例偏高（参考）", note:"常用简称：陕师大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nwu", name:"西北大学", tags:["211","双一流"], province:"陕西", city:"西安", type:"综合", featureSubjects:"地质学、考古学、理论经济学、化学、中国语言文学、地质资源与地质工程", topMajors:"考古学、地质学、经济学、化学", environment:"太白与长安校区并行，人文与地质特色鲜明，学术氛围浓厚", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，陕西口味突出，价格实惠", tuition:"普通类专业约4500-6000元/年（参考）", transfer:"转专业按学院考核，大一末可申请（参考）", baoyan:"约15%（参考）", employment:"约93%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：西大（西北）；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"fmmu", name:"空军军医大学", tags:["211","双一流"], province:"陕西", city:"西安", type:"军事", featureSubjects:"基础医学、临床医学、口腔医学、药学、公共卫生与预防医学", topMajors:"临床医学、口腔医学、药学、护理学", environment:"军队医学院校，医学与军事特色兼具，临床与科研资源优质", dorm:"学员宿舍实行军事化管理，多为集体住宿，条件因校区而异（参考）", canteen:"校内食堂按军队标准保障，营养搭配均衡（参考）", tuition:"军人学员按规定享受供给制待遇（参考）", transfer:"无军籍学员转专业按学校规定执行（参考）", baoyan:"约25%（参考）", employment:"以军队分配与定向就业为主（参考）", genderRatio:"男生比例偏高（参考）", note:"常用简称：空军军医大学；原第四军医大学，军队院校，报考需政审体检；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"qhu", name:"青海大学", tags:["211","双一流"], province:"青海", city:"西宁", type:"综合", featureSubjects:"生态学、草学、作物学、水利工程、化学工程与技术", topMajors:"草业科学、农学、水利水电工程、临床医学", environment:"位于西宁，高原气候特点鲜明，校园安静，生态与草学特色突出", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，西北口味突出，价格实惠", tuition:"普通类专业约3500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：青大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"nxu", name:"宁夏大学", tags:["211","双一流"], province:"宁夏", city:"银川", type:"综合", featureSubjects:"草学、民族学、化学工程与技术、水利工程、生物学", topMajors:"草业科学、农学、化学工程与工艺、水利水电工程", environment:"位于银川，校园环境安静，草学与民族学特色较鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量适中，西北口味突出，价格实惠", tuition:"普通类专业约3500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：宁大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"xju", name:"新疆大学", tags:["211","双一流"], province:"新疆", city:"乌鲁木齐", type:"综合", featureSubjects:"马克思主义理论、化学、计算机科学与技术、中国语言文学、生物学", topMajors:"计算机科学与技术、化学、法学、汉语言文学", environment:"位于乌鲁木齐，校园面积较大，多民族学生共处，氛围多元", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，新疆风味与各地菜品兼有，价格实惠", tuition:"普通类专业约3500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约12%（参考）", employment:"约91%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：新大；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+  { id:"shzu", name:"石河子大学", tags:["211","双一流"], province:"新疆", city:"石河子", type:"综合", featureSubjects:"作物学、农业工程、临床医学、化学工程与技术、畜牧学", topMajors:"临床医学、农学、化学工程与工艺、机械设计制造及其自动化", environment:"位于新疆石河子市，校园开阔安静，农医结合特色鲜明", dorm:"本科多为4-6人间，部分楼栋有空调，公共卫浴（参考）", canteen:"校内食堂数量较多，新疆风味与各地菜品兼有，价格实惠", tuition:"普通类专业约3500-5000元/年（参考）", transfer:"转专业按学院规定，大一末可申请（参考）", baoyan:"约13%（参考）", employment:"约92%（参考）", genderRatio:"男女比例较均衡（参考）", note:"常用简称：石大（石河子）；位于新疆石河子市；公开资料整理，仅供参考，请以院校官网与当年招生章程为准" },
+];
+
+
+/* ===== universities-sy.js ===== */
+window.GK_UNIVERSITIES_SY = [
+  { id:"ucas", name:"中国科学院大学", tags:["双一流"], province:"北京", city:"北京", type:"理工", featureSubjects:"数学、物理学、化学、材料科学与工程、计算机科学与技术、生物学", topMajors:"计算机科学与技术、人工智能、数学与应用数学、物理学、化学、材料科学与工程", environment:"依托中科院各研究所办学，科研平台与导师资源丰富，学术氛围浓厚", dorm:"研究生与本科生宿舍条件较好，多为2-4人间（参考）", canteen:"食堂数量有限，以各科研园区配套食堂为主，口味选择一般", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"以贯通培养与科研实践为主，转专业需咨询学校具体规则", baoyan:"推免比例较高，多数专业支持继续深造（参考）", employment:"毕业生以升学深造和科研院所就业为主（参考）", genderRatio:"男生比例明显偏高，男女比例较不均衡（参考）", note:"简称国科大，位于北京市" },
+  { id:"sustech", name:"上海科技大学", tags:["双一流"], province:"上海", city:"上海", type:"理工", featureSubjects:"材料科学与工程、计算机科学与技术、生物学、物理学、化学、电子科学与技术", topMajors:"计算机科学与技术、材料科学与工程、生物科学、物理学、电子信息工程", environment:"小规模高水平研究型大学，师生比高，科研资源与国际合作资源较丰富", dorm:"学生宿舍条件较好，多为2-4人间，部分配备独立卫浴（参考）", canteen:"校内食堂数量适中，菜品以简餐与家常菜为主，口味中规中矩", tuition:"普通类专业学费约6000元/年，具体以当年招生简章为准", transfer:"转专业政策相对灵活，需符合各学院考核要求", baoyan:"推免与出国深造比例较高（参考）", employment:"毕业生多进入科技企业与科研机构（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称上科大，位于上海市" },
+  { id:"sustc", name:"南方科技大学", tags:["双一流"], province:"广东", city:"深圳", type:"理工", featureSubjects:"数学、物理学、化学、生物学、材料科学与工程、计算机科学与技术", topMajors:"数学与应用数学、物理学、计算机科学与技术、生物科学、材料科学与工程", environment:"研究型大学，采用书院制培养，国际化师资与科研平台较突出", dorm:"书院与宿舍条件较好，多为2-4人间（参考）", canteen:"校内食堂数量适中，菜品选择较丰富，口味评价一般", tuition:"普通类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业相对灵活，需通过各院系考核", baoyan:"推免比例较高，升学深造氛围浓厚（参考）", employment:"毕业生多进入科技企业或继续深造（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称南科大，位于深圳市" },
+  { id:"cnu", name:"首都师范大学", tags:["双一流"], province:"北京", city:"北京", type:"师范", featureSubjects:"数学、中国语言文学、教育学、世界史、美术学、音乐与舞蹈学", topMajors:"汉语言文学、数学与应用数学、教育学、小学教育、英语", environment:"北京市属重点师范院校，师范教育基础扎实，教师教育特色鲜明", dorm:"宿舍条件参差，多为4-6人间，部分楼栋较旧（参考）", canteen:"校内食堂数量较多，菜品丰富，价格亲民", tuition:"师范类专业学费约5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，非师范转师范有相应要求", baoyan:"推免比例中等，部分专业可继续深造（参考）", employment:"毕业生多进入中小学教育行业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称首师大，位于北京市" },
+  { id:"ccmu", name:"首都医科大学", tags:["双一流"], province:"北京", city:"北京", type:"医药", featureSubjects:"临床医学、口腔医学、公共卫生与预防医学、药学、基础医学、护理学", topMajors:"临床医学、口腔医学、预防医学、药学、护理学、中医学", environment:"北京市属重点医科院校，临床医学教育资源丰富，附属医院众多", dorm:"宿舍条件一般，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品以家常菜为主", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业限制较多，医学类专业间调整有严格要求", baoyan:"推免比例中等，临床医学等专业可继续深造（参考）", employment:"毕业生多进入各级医疗机构（参考）", genderRatio:"女生比例略高，男女比例较均衡（参考）", note:"简称首医，位于北京市" },
+  { id:"tiangong", name:"天津工业大学", tags:["双一流"], province:"天津", city:"天津", type:"理工", featureSubjects:"纺织科学与工程、材料科学与工程、计算机科学与技术、化学工程与技术、环境科学与工程", topMajors:"纺织工程、材料科学与工程、计算机科学与技术、软件工程、轻化工程", environment:"以纺织与材料学科为特色，工科基础扎实，产学研结合紧密", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，工科内部调整相对可行", baoyan:"推免比例中等（参考）", employment:"毕业生多进入纺织、材料与制造行业（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称天工大，位于天津市" },
+  { id:"tjutcm", name:"天津中医药大学", tags:["双一流"], province:"天津", city:"天津", type:"医药", featureSubjects:"中药学、中医学、中西医结合、药学、护理学", topMajors:"中医学、中药学、针灸推拿学、护理学、康复治疗学", environment:"以中医药学科为特色，中医药教育与临床资源较丰富", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品兼顾南北口味", tuition:"医学类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入中医医疗机构与医药企业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称天中，位于天津市" },
+  { id:"sxu", name:"山西大学", tags:["双一流"], province:"山西", city:"太原", type:"综合", featureSubjects:"物理学、哲学、中国语言文学、化学、环境科学与工程、计算机科学与技术", topMajors:"物理学、汉语言文学、哲学、化学、计算机科学与技术、历史学", environment:"山西省重点综合性大学，文理基础学科底蕴较深厚，学科门类齐全", dorm:"宿舍条件因校区而异，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品以北方口味为主", tuition:"普通类专业学费约4000-5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多在省内及周边就业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称山大，位于太原市" },
+  { id:"shou", name:"上海海洋大学", tags:["双一流"], province:"上海", city:"上海", type:"农林", featureSubjects:"水产、海洋科学、食品科学与工程、生物学、环境科学与工程", topMajors:"水产养殖学、海洋渔业科学与技术、食品科学与工程、海洋科学、生物科学", environment:"以水产与海洋学科为特色，临港校区环境开阔，涉海专业实力突出", dorm:"宿舍条件较好，临港校区多为4人间（参考）", canteen:"校内食堂数量适中，海鲜类菜品有一定特色", tuition:"普通类专业学费约5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，涉海专业间调整相对可行", baoyan:"推免比例中等（参考）", employment:"毕业生多进入水产、食品与海洋相关行业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称上海海洋，位于上海市" },
+  { id:"shutcm", name:"上海中医药大学", tags:["双一流"], province:"上海", city:"上海", type:"医药", featureSubjects:"中医学、中药学、中西医结合、药学、护理学", topMajors:"中医学、中药学、针灸推拿学、中西医临床医学、护理学", environment:"以中医药学科为特色，中医药教育与临床资源丰富，行业特色鲜明", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品兼顾南北口味", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入中医医疗机构与医药企业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称上中医，位于上海市" },
+  { id:"sus", name:"上海体育大学", tags:["双一流"], province:"上海", city:"上海", type:"综合", featureSubjects:"体育学、体育教育、运动训练、运动人体科学、运动康复", topMajors:"体育教育、运动训练、运动人体科学、运动康复、武术与民族传统体育", environment:"以体育学科为特色的高校，体育教育与运动科研资源较丰富", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，营养搭配较为注重", tuition:"体育类专业学费约5000-8000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，体育类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入体育教育、健身与康复行业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称上体，位于上海市" },
+  { id:"shcmusic", name:"上海音乐学院", tags:["双一流"], province:"上海", city:"上海", type:"艺术", featureSubjects:"音乐与舞蹈学、作曲、音乐表演、音乐学、艺术管理", topMajors:"音乐表演、作曲与作曲技术理论、音乐学、录音艺术、艺术与科技", environment:"以音乐与舞蹈学科为特色，音乐教育与艺术实践资源丰富", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量较少，菜品选择一般", tuition:"艺术类专业学费约15000-20000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，艺术类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入文艺团体与音乐教育行业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称上音，位于上海市" },
+  { id:"njmu", name:"南京医科大学", tags:["双一流"], province:"江苏", city:"南京", type:"医药", featureSubjects:"公共卫生与预防医学、临床医学、口腔医学、药学、护理学、基础医学", topMajors:"临床医学、公共卫生与预防医学、口腔医学、预防医学、药学、护理学", environment:"江苏省属重点医科院校，公共卫生与临床医学资源较丰富，附属医院众多", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业限制较多，医学类专业调整有严格要求", baoyan:"推免比例中等（参考）", employment:"毕业生多进入各级医疗机构（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称南医大，位于南京市" },
+  { id:"nuist", name:"南京信息工程大学", tags:["双一流"], province:"江苏", city:"南京", type:"理工", featureSubjects:"大气科学、环境科学与工程、计算机科学与技术、信息与通信工程、管理科学与工程", topMajors:"大气科学、应用气象学、计算机科学与技术、电子信息工程、环境科学", environment:"以大气科学为特色，气象与环境学科实力突出，行业特色鲜明", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入气象、环保与信息行业（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称南信大，位于南京市" },
+  { id:"njfu", name:"南京林业大学", tags:["双一流"], province:"江苏", city:"南京", type:"农林", featureSubjects:"林业工程、林学、风景园林学、生态学、环境科学与工程", topMajors:"林学、园林、风景园林、木材科学与工程、生态学", environment:"以林业与生态学科为特色，林学与园林教育基础扎实", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"农林类专业学费约2500-5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入林业、园林与生态环保行业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称南林，位于南京市" },
+  { id:"njupt", name:"南京邮电大学", tags:["双一流"], province:"江苏", city:"南京", type:"理工", featureSubjects:"信息与通信工程、电子科学与技术、计算机科学与技术、光学工程、软件工程", topMajors:"通信工程、电子信息工程、电子科学与技术、计算机科学与技术、软件工程", environment:"以电子信息学科为特色，通信与信息领域行业特色鲜明", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入通信、电子信息与互联网行业（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称南邮，位于南京市" },
+  { id:"njucm", name:"南京中医药大学", tags:["双一流"], province:"江苏", city:"南京", type:"医药", featureSubjects:"中药学、中医学、中西医结合、药学、护理学", topMajors:"中医学、中药学、针灸推拿学、护理学、康复治疗学", environment:"以中医药学科为特色，中医药教育与临床资源较丰富", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品兼顾南北口味", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入中医医疗机构与医药企业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称南中医，位于南京市" },
+  { id:"caa", name:"中国美术学院", tags:["双一流"], province:"浙江", city:"杭州", type:"艺术", featureSubjects:"美术学、设计学、艺术学理论、戏剧与影视学", topMajors:"美术学、视觉传达设计、环境设计、产品设计、建筑学、动画", environment:"以美术与设计学科为特色，艺术教育与创作资源丰富，校园艺术氛围浓厚", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品选择一般", tuition:"艺术类专业学费约15000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，艺术类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入设计、教育与文化艺术行业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称国美，位于杭州市" },
+  { id:"cafa", name:"中央美术学院", tags:["双一流"], province:"北京", city:"北京", type:"艺术", featureSubjects:"美术学、设计学、艺术学理论", topMajors:"美术学、绘画、视觉传达设计、环境设计、建筑学、雕塑", environment:"以美术学科为特色，造型与设计教育底蕴深厚，艺术资源丰富", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量较少，菜品选择一般", tuition:"艺术类专业学费约15000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，艺术类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入艺术创作、设计与教育行业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称央美，位于北京市" },
+  { id:"zhongxi", name:"中央戏剧学院", tags:["双一流"], province:"北京", city:"北京", type:"艺术", featureSubjects:"戏剧与影视学、戏剧表演、戏剧影视文学、导演、舞台美术", topMajors:"表演、戏剧影视文学、导演、戏剧影视美术设计、播音与主持艺术", environment:"以戏剧与影视学科为特色，戏剧教育与舞台艺术资源丰富", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量较少，菜品选择一般", tuition:"艺术类专业学费约15000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，艺术类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入戏剧影视与演艺行业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称中戏，位于北京市" },
+  { id:"ccmusic", name:"中国音乐学院", tags:["双一流"], province:"北京", city:"北京", type:"艺术", featureSubjects:"音乐与舞蹈学、音乐表演、作曲、音乐学、艺术管理", topMajors:"音乐表演、作曲与作曲技术理论、音乐学、录音艺术、艺术与科技", environment:"以音乐学科为特色，民族音乐教育与艺术实践资源丰富", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量较少，菜品选择一般", tuition:"艺术类专业学费约15000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，艺术类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入音乐教育与文艺团体（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称国音，位于北京市" },
+  { id:"henu", name:"河南大学", tags:["双一流"], province:"河南", city:"开封", type:"综合", featureSubjects:"生物学、教育学、中国语言文学、地理学、中国史、经济学", topMajors:"汉语言文学、教育学、英语、生物学、地理科学、历史学", environment:"河南省属重点综合性大学，文理基础学科底蕴较深厚，多校区办学", dorm:"宿舍条件因校区而异，多为4-6人间（参考）", canteen:"校内食堂数量较多，菜品丰富，价格亲民", tuition:"普通类专业学费约4000-5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多在省内及周边地区就业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称河大，位于开封市（另有郑州校区）" },
+  { id:"xtu", name:"湘潭大学", tags:["双一流"], province:"湖南", city:"湘潭", type:"综合", featureSubjects:"数学、材料科学与工程、化学、马克思主义理论、法学", topMajors:"数学与应用数学、材料科学与工程、法学、化学、汉语言文学", environment:"湖南省属综合性大学，数学与材料学科基础较好，学风扎实", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品以湘菜口味为主", tuition:"普通类专业学费约4000-5000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多在省内及周边就业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称湘大，位于湘潭市" },
+  { id:"scau", name:"华南农业大学", tags:["双一流"], province:"广东", city:"广州", type:"农林", featureSubjects:"农业工程、生物学、植物保护、畜牧学、食品科学与工程", topMajors:"农学、园艺、植物保护、动物科学、食品科学与工程、生物科学", environment:"以农业与生物学科为特色，农学与生命科学研究基础较好", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量较多，菜品丰富，价格亲民", tuition:"农林类专业学费约2500-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入农业、食品与生物技术行业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称华农，位于广州市" },
+  { id:"gzhmc", name:"广州医科大学", tags:["双一流"], province:"广东", city:"广州", type:"医药", featureSubjects:"临床医学、公共卫生与预防医学、药学、基础医学、护理学", topMajors:"临床医学、预防医学、药学、护理学、医学检验技术", environment:"广东省属医科院校，临床医学与公共卫生资源较丰富，呼吸病学研究特色突出", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业限制较多，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入各级医疗机构（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称广医，位于广州市" },
+  { id:"gzucm", name:"广州中医药大学", tags:["双一流"], province:"广东", city:"广州", type:"医药", featureSubjects:"中药学、中医学、中西医结合、药学、护理学", topMajors:"中医学、中药学、针灸推拿学、护理学、中西医临床医学", environment:"以中医药学科为特色，中医药教育与临床资源较丰富，行业特色鲜明", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品兼顾南北口味", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入中医医疗机构与医药企业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称广中医，位于广州市" },
+  { id:"cdut", name:"成都理工大学", tags:["双一流"], province:"四川", city:"成都", type:"理工", featureSubjects:"地质学、地质资源与地质工程、地球物理学、地质工程、环境科学与工程", topMajors:"地质学、地质工程、地球物理学、资源勘查工程、勘查技术与工程", environment:"以地质与地球科学为特色，地学与资源勘查学科基础扎实", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品以川菜口味为主", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入地质、能源与资源勘查行业（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称成都理工，位于成都市" },
+  { id:"swpu", name:"西南石油大学", tags:["双一流"], province:"四川", city:"成都", type:"理工", featureSubjects:"石油与天然气工程、地质资源与地质工程、机械工程、化学工程与技术", topMajors:"石油工程、油气储运工程、资源勘查工程、机械工程、化学工程与工艺", environment:"以石油与天然气学科为特色，油气与地质工程领域特色鲜明", dorm:"宿舍条件较好，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品以川菜口味为主", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多进入石油、能源与化工行业（参考）", genderRatio:"男生比例偏高，男女比例较不均衡（参考）", note:"简称西南石大，位于成都市" },
+  { id:"cdutcm", name:"成都中医药大学", tags:["双一流"], province:"四川", city:"成都", type:"医药", featureSubjects:"中药学、中医学、中西医结合、药学、护理学", topMajors:"中医学、中药学、针灸推拿学、护理学、康复治疗学", environment:"以中医药学科为特色，中医药教育与临床资源较丰富", dorm:"宿舍条件中等，多为4-6人间（参考）", canteen:"校内食堂数量适中，菜品兼顾南北口味", tuition:"医学类专业学费约6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，医学类专业调整受限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入中医医疗机构与医药企业（参考）", genderRatio:"女生比例偏高，男女比例较不均衡（参考）", note:"简称成中医，位于成都市" },
+  { id:"nbu", name:"宁波大学", tags:["双一流"], province:"浙江", city:"宁波", type:"综合", featureSubjects:"力学、水产、信息与通信工程、数学、法学、教育学", topMajors:"法学、数学与应用数学、通信工程、水产养殖学、计算机科学与技术", environment:"浙江省属综合性大学，力学与水产学科特色突出，应用型学科发展较快", dorm:"宿舍条件较好，多为4人间（参考）", canteen:"校内食堂数量适中，菜品较丰富", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，部分专业接受申请", baoyan:"推免比例中等（参考）", employment:"毕业生多在省内及周边就业（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称宁大，位于宁波市" },
+  { id:"cfau", name:"外交学院", tags:["双一流"], province:"北京", city:"北京", type:"政法", featureSubjects:"政治学、外交学、国际关系、法学、外国语言文学", topMajors:"外交学、国际事务与国际关系、法学、英语、翻译", environment:"以外交与国际关系学科为特色，小规模精英培养，国际化程度较高", dorm:"宿舍条件中等，多为2-4人间（参考）", canteen:"校内食堂数量较少，菜品选择一般", tuition:"普通类专业学费约5000-6000元/年，具体以当年公布为准", transfer:"转专业需符合学校规定，规模较小名额有限", baoyan:"推免比例中等（参考）", employment:"毕业生多进入外事、涉外与公务系统（参考）", genderRatio:"男女比例较均衡（参考）", note:"简称外院，位于北京市" },
+  { id:"cppsu", name:"中国人民公安大学", tags:["双一流"], province:"北京", city:"北京", type:"政法", featureSubjects:"公安学、法学、公安技术、侦查学、治安学", topMajors:"治安学、侦查学、公安管理学、刑事科学技术、法学", environment:"以公安与法学学科为特色，警务实战与公安教育特色鲜明，纪律化管理", dorm:"宿舍条件中等，多为4-6人间，管理规范（参考）", canteen:"校内食堂数量适中，菜品以家常菜为主", tuition:"普通类专业学费约5000元/年，具体以当年公布为准", transfer:"转专业限制较多，公安类专业调整有严格要求", baoyan:"推免比例中等（参考）", employment:"毕业生多进入公安与政法系统（参考）", genderRatio:"男生比例明显偏高，男女比例较不均衡（参考）", note:"简称公安大学，位于北京市" }
+];
+
+
+/* ===== app.js ===== */
+/* 志愿通 · 前端主逻辑（零构建，hash 路由） */
+(function () {
+  'use strict';
+
+  /* ---------------- 工具 ---------------- */
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s == null ? '' : s)
+    .replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s || '').toLowerCase();
+
+  const RULES = window.GK_RULES || [];
+  const MAJORS = window.GK_MAJORS || [];
+  const DIRECTIONS = window.GK_DIRECTIONS || [];
+  const UNIS = (function () {
+    const raw = []
+      .concat(window.GK_UNIVERSITIES_985 || [])
+      .concat(window.GK_UNIVERSITIES_211A || [])
+      .concat(window.GK_UNIVERSITIES_211B || [])
+      .concat(window.GK_UNIVERSITIES_SY || []);
+    const seen = {};
+    return raw.filter((u) => {
+      if (!u || !u.name || seen[u.name]) return false;
+      seen[u.name] = 1;
+      return true;
+    });
+  })();
+  const META = window.GK_DATA_META || {};
+
+  const UI = {}; // 各页面临时状态
+
+  /* ---------------- 首页 ---------------- */
+  function viewHome() {
+    const rules = RULES.length, majors = MAJORS.length, unis = UNIS.length;
+    return `
+    <section class="hero">
+      <h1>填志愿，先看清规则，再看清方向</h1>
+      <p class="sub">把散落在各省考试院、院校官网、就业报告里的信息，整理成可搜索、可比较的参考依据</p>
+      <div class="hero-search">
+        <input id="heroSearch" type="search" placeholder="搜索名词、专业或院校，例如：平行志愿 / 人工智能 / 四川大学" autocomplete="off">
+        <button class="btn" id="heroSearchBtn">搜索</button>
+      </div>
+      <div class="hero-tips">
+        <span>试试：</span>
+        <span>平行志愿</span><span>·</span><span>专业级差</span><span>·</span>
+        <span>集成电路</span><span>·</span><span>985 院校</span>
+      </div>
+    </section>
+
+    <div class="grid grid-4">
+      <a class="entry" href="#/rules">
+        <div class="entry-icon">壹</div>
+        <h3>填报规则与名词</h3>
+        <p>平行志愿、专业级差、一分一段表、退档原因……用大白话讲清楚每个规则和名词。</p>
+        <div class="meta">已收录 ${rules} 个名词与规则</div>
+      </a>
+      <a class="entry" href="#/majors">
+        <div class="entry-icon">贰</div>
+        <h3>行业前景与专业</h3>
+        <p>专业热度榜、绿牌红牌专业、国家产业方向，看清“现在热”和“未来热”。</p>
+        <div class="meta">已收录 ${majors} 个专业 · ${DIRECTIONS.length} 个方向</div>
+      </a>
+      <a class="entry" href="#/ai">
+        <div class="entry-icon">叁</div>
+        <h3>AI 志愿建议</h3>
+        <p>输入分数、位次和意向，生成冲稳保参考方案与需要向 AI 追问的清单。</p>
+        <div class="meta">位次优先 · 附风险提示</div>
+      </a>
+      <a class="entry" href="#/universities">
+        <div class="entry-icon">肆</div>
+        <h3>院校库与分类</h3>
+        <p>985 / 211 / 双一流分类检索，特色学科、王牌专业、宿舍环境一表看清。</p>
+        <div class="meta">已收录 ${unis} 所院校</div>
+      </a>
+    </div>
+
+    <div class="section-head">
+      <h2>使用建议</h2>
+      <span class="hint">信息检索 ≠ 决策，最终请回到官方文件</span>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-title">1. 先用位次，不要用分数</div>
+        <p class="card-desc">每年试卷难度不同，分数线会浮动，但位次的含金量相对稳定。先用一分一段表查到自己的全省位次。</p>
+      </div>
+      <div class="card">
+        <div class="card-title">2. 再看规则，别踩硬红线</div>
+        <p class="card-desc">退档最常见的四个原因：不服从调剂、单科成绩不达标、体检受限、投档比例卡位。填报前逐条核对招生章程。</p>
+      </div>
+      <div class="card">
+        <div class="card-title">3. 最后排梯度，冲稳保都要有</div>
+        <p class="card-desc">只填“冲”不填“保”是最典型的滑档原因。保底志愿一定是自己愿意去的，否则等于白填。</p>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>关于本平台数据</h2>
+    </div>
+    <div class="card">
+      <p class="card-desc"><b>数据来源：</b>${esc(META.sources || '公开资料整理')}</p>
+      <p class="card-desc" style="margin-top:8px"><b>更新说明：</b>${esc(META.updated || '示例数据')}</p>
+      <div class="note-box">${esc(META.disclaimer || '本平台内容仅供信息参考。')}</div>
+    </div>
+    `;
+  }
+
+  /* ---------------- 板块一：规则与名词 ---------------- */
+  function ruleCard(t, open) {
+    return `
+    <div class="term ${open ? 'open' : ''}" data-id="${esc(t.id)}">
+      <button class="term-head" type="button">
+        <span class="term-name">${esc(t.term)}</span>
+        <span class="tag ${t.scope === '分省差异' ? 'tag-amber' : 'tag-plain'}">${esc(t.scope)}</span>
+        <span class="term-def">${esc(t.def)}</span>
+        <span class="term-caret">▾</span>
+      </button>
+      <div class="term-body">
+        <div class="term-block"><span class="k">通俗解释</span><div class="v">${esc(t.plain)}</div></div>
+        <div class="term-block"><span class="k">举个例子</span><div class="v">${esc(t.example)}</div></div>
+        <div class="term-block pitfall"><span class="k">易错提醒</span><div class="v">${esc(t.pitfall)}</div></div>
+      </div>
+    </div>`;
+  }
+
+  function viewRules() {
+    const cats = ['全部'].concat(Array.from(new Set(RULES.map((r) => r.cat))));
+    UI.rules = { cat: '全部', q: '' };
+    return `
+    <div class="page-head">
+      <h1>填报规则与名词解释</h1>
+      <p>用清晰简明的语言解释志愿填报中的规则与术语。标注「分省差异」的条目，各省规定不同，请以本省考试院当年文件为准。</p>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="ruleCats">
+        ${cats.map((c) => `<button class="chip ${c === '全部' ? 'on' : ''}" data-cat="${esc(c)}" type="button">${esc(c)}</button>`).join('')}
+      </div>
+      <input type="search" id="ruleSearch" placeholder="搜索名词或关键词，如：调剂 / 位次 / 退档">
+      <span class="result-count" id="ruleCount"></span>
+    </div>
+    <div class="term-list" id="ruleList"></div>`;
+
+  }
+
+  function paintRules() {
+    const st = UI.rules;
+    const kw = norm(st.q);
+    const list = RULES.filter((t) => {
+      const okCat = st.cat === '全部' || t.cat === st.cat;
+      if (!okCat) return false;
+      if (!kw) return true;
+      return norm([t.term, t.def, t.plain, t.example, t.pitfall, t.cat].join(' ')).includes(kw);
+    });
+    $('#ruleList').innerHTML = list.length
+      ? list.map((t) => ruleCard(t, kw && list.length <= 6)).join('')
+      : `<div class="empty"><div class="big">⌕</div>没有找到匹配的名词，换个关键词试试</div>`;
+    $('#ruleCount').textContent = `共 ${list.length} 条`;
+  }
+
+  /* ---------------- 板块二：专业与行业 ---------------- */
+  function viewMajors() {
+    UI.majors = { level: '全部' };
+    return `
+    <div class="page-head">
+      <h1>行业前景与专业热度</h1>
+      <p>热度指数由公开就业报告、招生计划变化与产业政策综合整理的<b>参考值</b>，用于了解趋势，不作为报考依据。</p>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="majorLevels">
+        <button class="chip on" data-lv="全部" type="button">全部专业</button>
+        <button class="chip" data-lv="绿牌" type="button">绿牌（需求增长）</button>
+        <button class="chip" data-lv="黄牌" type="button">黄牌（供需平衡）</button>
+        <button class="chip" data-lv="红牌" type="button">红牌（就业偏难）</button>
+      </div>
+      <span class="result-count" id="majorCount"></span>
+    </div>
+    <div id="majorList"></div>
+
+    <div class="section-head">
+      <h2>未来热门方向</h2>
+      <span class="hint">政策 + 产业趋势 + 对应专业</span>
+    </div>
+    <div class="grid grid-3" id="dirList"></div>
+
+    <div class="note-box" style="margin-top:20px">${esc(META.disclaimer || '')}</div>`;
+  }
+
+  function paintMajors() {
+    const st = UI.majors;
+    const list = MAJORS
+      .filter((m) => st.level === '全部' || m.level === st.level)
+      .slice()
+      .sort((a, b) => b.heat - a.heat);
+    $('#majorList').innerHTML = list.map((m) => {
+      const lvTag = m.level === '绿牌' ? 'tag-green' : m.level === '红牌' ? 'tag-red' : 'tag-amber';
+      return `
+      <div class="major-row" data-major="${esc(m.name)}">
+        <div class="major-name">${esc(m.name)}</div>
+        <div class="major-cat">${esc(m.cat)}</div>
+        <div class="major-bar"><i style="width:${Number(m.heat) || 0}%"></i></div>
+        <div class="major-score">${esc(m.heat)}</div>
+        <div class="major-flags">
+          <span class="tag ${lvTag}">${esc(m.level)}</span>
+        </div>
+      </div>`;
+    }).join('');
+    $('#majorCount').textContent = `共 ${list.length} 个专业`;
+
+    $('#dirList').innerHTML = DIRECTIONS.map((d) => `
+      <div class="dir-card">
+        <h3>${esc(d.name)}</h3>
+        <span class="heat">热度：${esc(d.heat)}</span>
+        <p>${esc(d.desc)}</p>
+        <p><b>政策支撑：</b>${esc(d.policy)}</p>
+        <div class="tag-row">${d.majors.map((x) => `<span class="tag tag-plain">${esc(x)}</span>`).join('')}</div>
+      </div>`).join('');
+  }
+
+  /* ---------------- 板块四：院校库 ---------------- */
+  const PAGE_SIZE = 25;
+
+  function uniTags(u) {
+    return (u.tags || []).map((t) => {
+      const cls = t === '985' ? 'badge-985' : t === '211' ? 'badge-211' : 'badge-sy';
+      return `<span class="tag ${cls}">${esc(t)}</span>`;
+    }).join('');
+  }
+
+  function viewUniversities() {
+    const provinces = Array.from(new Set(UNIS.map((u) => u.province))).sort();
+    const types = Array.from(new Set(UNIS.map((u) => u.type))).sort();
+    UI.unis = { q: '', tag: '全部', prov: '全部', type: '全部', page: 1 };
+    return `
+    <div class="page-head">
+      <h1>院校库 · 985 / 211 / 双一流</h1>
+      <p>覆盖 985、211 及双一流建设高校。特色学科与王牌专业来自公开资料整理，<b>宿舍与环境条件因校区、楼栋差异较大且会翻新，请以院校官网与新生指南为准。</b></p>
+    </div>
+    <div class="toolbar">
+      <input type="search" id="uniSearch" placeholder="搜索院校名称、简称、城市或特色学科">
+      <select id="uniProv"><option value="全部">全部地区</option>${provinces.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}</select>
+      <select id="uniType"><option value="全部">全部类型</option>${types.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}</select>
+      <div class="chips" id="uniTags">
+        ${['全部', '985', '211', '双一流'].map((t) => `<button class="chip ${t === '全部' ? 'on' : ''}" data-tag="${esc(t)}" type="button">${esc(t)}</button>`).join('')}
+      </div>
+      <span class="result-count" id="uniCount"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr>
+          <th>院校</th><th>层次</th><th>地区</th><th>类型</th>
+          <th>特色学科</th><th>王牌专业</th><th>宿舍情况（参考）</th>
+        </tr></thead>
+        <tbody id="uniBody"></tbody>
+      </table>
+    </div>
+    <div class="pager" id="uniPager"></div>`;
+  }
+
+  function uniFiltered() {
+    const st = UI.unis;
+    const kw = norm(st.q);
+    return UNIS.filter((u) => {
+      if (st.tag !== '全部' && !(u.tags || []).includes(st.tag)) return false;
+      if (st.prov !== '全部' && u.province !== st.prov) return false;
+      if (st.type !== '全部' && u.type !== st.type) return false;
+      if (!kw) return true;
+      return norm([u.name, u.province, u.city, u.type, u.featureSubjects, u.topMajors, u.environment, u.note].join(' ')).includes(kw);
+    });
+  }
+
+  function paintUniversities() {
+    const st = UI.unis;
+    const list = uniFiltered();
+    const total = list.length;
+    const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (st.page > pages) st.page = pages;
+    const start = (st.page - 1) * PAGE_SIZE;
+    const rows = list.slice(start, start + PAGE_SIZE);
+
+    $('#uniBody').innerHTML = rows.length ? rows.map((u) => `
+      <tr data-uni="${esc(u.id || u.name)}">
+        <td class="uname">${esc(u.name)}</td>
+        <td><div class="tag-row">${uniTags(u)}</div></td>
+        <td class="nowrap">${esc(u.province)}</td>
+        <td class="nowrap">${esc(u.type)}</td>
+        <td class="clamp">${esc(u.featureSubjects)}</td>
+        <td class="clamp">${esc(u.topMajors)}</td>
+        <td class="clamp">${esc(u.dorm)}</td>
+      </tr>`).join('')
+      : `<tr><td colspan="7"><div class="empty"><div class="big">⌕</div>没有符合条件的院校，试试放宽筛选条件</div></td></tr>`;
+
+    $('#uniCount').textContent = `共 ${total} 所`;
+
+    const btns = [];
+    btns.push(`<button type="button" data-page="${st.page - 1}" ${st.page === 1 ? 'disabled' : ''}>‹</button>`);
+    const win = 5;
+    let s = Math.max(1, st.page - 2), e = Math.min(pages, s + win - 1);
+    s = Math.max(1, Math.min(s, pages - win + 1));
+    for (let i = s; i <= e; i++) btns.push(`<button type="button" data-page="${i}" class="${i === st.page ? 'on' : ''}">${i}</button>`);
+    btns.push(`<button type="button" data-page="${st.page + 1}" ${st.page === pages ? 'disabled' : ''}>›</button>`);
+    btns.push(`<span class="info">第 ${st.page} / ${pages} 页</span>`);
+    $('#uniPager').innerHTML = pages > 1 ? btns.join('') : '';
+  }
+
+  function openUni(key) {
+    const u = UNIS.find((x) => String(x.id || x.name) === String(key));
+    if (!u) return;
+    const row = (k, v) => `<div class="drow"><span class="dk">${esc(k)}</span><span class="dv">${esc(v || '暂无公开数据')}</span></div>`;
+    $('#drawerHead').innerHTML = `
+      <h2>${esc(u.name)}</h2>
+      <div class="tag-row">${uniTags(u)}<span class="tag tag-plain">${esc(u.province)} · ${esc(u.city)}</span><span class="tag tag-plain">${esc(u.type)}</span></div>
+      <button class="drawer-close" id="drawerClose" type="button">✕</button>`;
+    $('#drawerBody').innerHTML = `
+      ${row('特色学科', u.featureSubjects)}
+      ${row('王牌专业', u.topMajors)}
+      ${row('校园环境', u.environment)}
+      ${row('宿舍情况', u.dorm)}
+      ${row('食堂', u.canteen)}
+      ${row('学费参考', u.tuition)}
+      ${row('转专业', u.transfer)}
+      ${row('保研情况', u.baoyan)}
+      ${row('就业情况', u.employment)}
+      ${row('男女比例', u.genderRatio)}
+      <div class="note-box">${esc(u.note || '以上为公开资料整理，仅供参考，请以院校官网与当年招生章程为准。')}</div>`;
+    $('#drawer').classList.add('show');
+    $('#drawerMask').classList.add('show');
+  }
+  function closeUni() {
+    $('#drawer').classList.remove('show');
+    $('#drawerMask').classList.remove('show');
+  }
+
+  /* ---------------- 板块三：AI 志愿建议 ---------------- */
+  function viewAI() {
+    const provinces = Array.from(new Set(UNIS.map((u) => u.province))).sort();
+    return `
+    <div class="page-head">
+      <h1>AI 志愿建议</h1>
+      <p>填写你的分数、位次与意向，生成一份<b>冲稳保参考框架</b>和一份可直接粘贴给任意大模型的<b>提问模板</b>。输出仅为参考，不构成录取承诺。</p>
+    </div>
+
+    <div class="card" style="margin-bottom:18px">
+      <div class="card-title">第一步 · 填写你的情况</div>
+      <p class="card-desc" style="margin-bottom:16px">带 * 的为必填。位次比分数更重要，请务必填全省位次。</p>
+      <div class="form-grid">
+        <div class="field"><label>省份 *</label>
+          <select id="aiProv"><option value="">请选择</option>${provinces.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join('')}<option value="其他">其他省份</option></select>
+        </div>
+        <div class="field"><label>科类 / 选科 *</label>
+          <select id="aiKe"><option value="">请选择</option><option>物理类</option><option>历史类</option><option>理科</option><option>文科</option><option>综合改革</option></select>
+        </div>
+        <div class="field"><label>高考分数 *</label><input id="aiScore" type="number" placeholder="如 612"></div>
+        <div class="field"><label>全省位次 *</label><input id="aiRank" type="number" placeholder="如 12600"></div>
+        <div class="field"><label>意向专业</label><input id="aiMajor" placeholder="如 计算机、临床医学（可多个）"></div>
+        <div class="field"><label>意向职业</label><input id="aiJob" placeholder="如 算法工程师、医生"></div>
+        <div class="field"><label>意向城市</label><input id="aiCity" placeholder="如 成都、杭州（可多个）"></div>
+        <div class="field"><label>意向院校</label><input id="aiUni" placeholder="如 四川大学、电子科技大学"></div>
+        <div class="field"><label>特别说明</label><input id="aiExtra" placeholder="如 不接受医学类 / 家庭希望留在省内"></div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn" id="aiGen" type="button">生成参考建议</button>
+        <button class="btn btn-ghost" id="aiClear" type="button">清空</button>
+      </div>
+    </div>
+
+    <div class="card" id="aiResultCard" style="display:none">
+      <div class="card-title">第二步 · 参考建议</div>
+      <p class="card-desc" style="margin-bottom:14px">下面是依据位次区间生成的<b>填报框架</b>，不是录取预测。请配合官方数据使用。</p>
+      <div id="aiResult" style="display:grid;gap:14px"></div>
+
+      <div class="section-head" style="margin-top:26px"><h2>可直接粘贴给 AI 的提问模板</h2></div>
+      <p class="card-desc" style="margin-bottom:10px">把下面的内容复制到任何大模型（或本页下方的 API 调用框）即可获得更具体的分析。</p>
+      <div class="out-box" id="aiPrompt"></div>
+      <div style="margin-top:12px"><button class="btn btn-ghost btn-sm" id="aiCopy" type="button">复制提问模板</button></div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="card-title">第三步 · 接入大模型（可选）</div>
+      <p class="card-desc" style="margin-bottom:14px">如果你有大模型 API，可在此填入地址与密钥，直接在当前页面获得 AI 回答。密钥只保存在你本机浏览器，不会上传到任何第三方。</p>
+      <div class="form-grid">
+        <div class="field"><label>API 地址</label><input id="apiUrl" placeholder="如 https://api.openai.com/v1/chat/completions"></div>
+        <div class="field"><label>模型名称</label><input id="apiModel" placeholder="如 gpt-4o-mini / deepseek-chat"></div>
+        <div class="field"><label>API Key</label><input id="apiKey" type="password" placeholder="sk-..."></div>
+      </div>
+      <div style="margin-top:18px"><button class="btn" id="aiCall" type="button">调用 AI 生成建议</button></div>
+      <div class="out-box" id="aiAnswer" style="display:none;margin-top:16px"></div>
+    </div>`;
+  }
+
+  function buildPrompt(v) {
+    return `你是一位熟悉中国高考志愿填报规则的升学规划顾问。请基于以下考生信息，给出一份结构化的志愿填报参考建议。
+
+【考生信息】
+- 省份：${v.province}
+- 科类/选科：${v.ke}
+- 高考分数：${v.score}
+- 全省位次：${v.rank}
+- 意向专业：${v.major || '未明确'}
+- 意向职业：${v.job || '未明确'}
+- 意向城市：${v.city || '未明确'}
+- 意向院校：${v.uni || '未明确'}
+- 特别说明：${v.extra || '无'}
+
+【输出要求】
+1. 先用「位次法」把该位次换算为往年的等效位次区间，说明换算假设，并提醒我以本省一分一段表为准。
+2. 按「冲 / 稳 / 保」三档，分别给出建议的位次区间与院校层次范围，并说明每档大概应安排多少个志愿。
+3. 针对我的意向专业，说明该专业常见的选科要求、单科要求与体检限制。
+4. 列出我必须在院校招生章程里逐条核对的 5 项内容（如专业级差、服从调剂规则、单科要求、体检要求、转专业政策）。
+5. 指出我这份需求中存在的 3 个最大风险点，并给出规避建议。
+6. 最后给出 5 个我应该继续追问你的问题。
+
+【硬性约束】
+- 不确定的数据必须明确标注「需核实」，不要编造具体录取分数或名次。
+- 不得给出任何「保证录取」的表述。
+- 全部结论必须以本省考试院当年文件和院校当年招生章程为最终依据。`;
+  }
+
+  function localAdvice(v) {
+    const s = Number(v.score) || 0;
+    const r = Number(v.rank) || 0;
+    const band = (a, b) => `位次约 ${Math.max(1, Math.round(r * a)).toLocaleString()} — ${Math.round(r * b).toLocaleString()} 名`;
+    return [
+      { t: '冲（有机会，但需接受风险）', d: `建议位次区间：比你的位次靠前，约 ${Math.max(1, Math.round(r * 0.55)).toLocaleString()} — ${Math.round(r * 0.9).toLocaleString()} 名。<br>建议占志愿总数的 20%~30%。这一档要用来博更好的院校或专业，同时必须勾选服从调剂。` },
+      { t: '稳（把握较大）', d: `建议位次区间：与你接近，约 ${band(0.9, 1.25)}。<br>建议占 40%~50%。这一档是你的主战场，应重点核对专业组内是否有不能接受的专业。` },
+      { t: '保（兜底，必须能走）', d: `建议位次区间：明显低于你的位次，约 ${band(1.25, 2.2)}。<br>建议占 30% 左右，且最后 1~2 个志愿要确保绝对能录取，避免滑档。` },
+      { t: '必查清单（5 项）', d: '① 是否有专业级差；② 服从调剂的具体范围；③ 单科成绩要求（英语/数学）；④ 体检与色盲色弱限制；⑤ 转专业与大类分流的规则。' },
+      { t: '你当前信息里的主要风险', d: (v.major || v.city || v.uni)
+        ? `你填写了意向（专业：${esc(v.major) || '—'}；城市：${esc(v.city) || '—'}；院校：${esc(v.uni) || '—'}），这属于<b>强意向</b>。强意向最容易导致志愿集中、梯度不足，建议保留至少 30% 不设意向限制的志愿作为保底。`
+        : '你尚未填写专业、城市或院校意向。意向过宽会导致排序困难，建议先确定 2~3 个优先方向，再排梯度。' },
+      { t: '免责说明', d: '以上为基于位次区间的通用框架，<b>不是录取概率预测</b>，也未使用本省历年录取数据。最终请以本省考试院文件和院校招生章程为准。' }
+    ];
+  }
+
+  function aiGenerate() {
+    const v = {
+      province: $('#aiProv').value, ke: $('#aiKe').value,
+      score: $('#aiScore').value.trim(), rank: $('#aiRank').value.trim(),
+      major: $('#aiMajor').value.trim(), job: $('#aiJob').value.trim(),
+      city: $('#aiCity').value.trim(), uni: $('#aiUni').value.trim(),
+      extra: $('#aiExtra').value.trim()
+    };
+    const missing = [];
+    if (!v.province) missing.push('省份');
+    if (!v.ke) missing.push('科类/选科');
+    if (!v.score) missing.push('高考分数');
+    if (!v.rank) missing.push('全省位次');
+    if (missing.length) {
+      $('#aiResultCard').style.display = 'block';
+      $('#aiResult').innerHTML = `<div class="note-box">请先填写：${esc(missing.join('、'))}。位次是最关键的字段，请务必填写。</div>`;
+      $('#aiPrompt').textContent = '';
+      return;
+    }
+    $('#aiResultCard').style.display = 'block';
+    $('#aiResult').innerHTML = localAdvice(v).map((b) => `
+      <div class="card" style="box-shadow:none">
+        <div class="card-title">${esc(b.t)}</div>
+        <p class="card-desc">${b.d}</p>
+      </div>`).join('');
+    $('#aiPrompt').textContent = buildPrompt(v);
+  }
+
+  async function aiCall() {
+    const url = $('#apiUrl').value.trim();
+    const key = $('#apiKey').value.trim();
+    const model = $('#apiModel').value.trim();
+    const box = $('#aiAnswer');
+    box.style.display = 'block';
+    if (!url || !key || !model) { box.textContent = '请先完整填写 API 地址、模型名称和 API Key。'; return; }
+    const prompt = $('#aiPrompt').textContent;
+    if (!prompt) { box.textContent = '请先点击上方「生成参考建议」，让系统准备好提问模板。'; return; }
+    box.textContent = '正在请求模型…';
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            { role: 'system', content: '你是一位严谨的中国高考志愿填报顾问，不编造数据，不承诺录取。' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.3
+        })
+      });
+      const data = await res.json();
+      const text = data && data.choices && data.choices[0] && data.choices[0].message
+        ? data.choices[0].message.content
+        : JSON.stringify(data).slice(0, 1200);
+      box.textContent = text;
+    } catch (err) {
+      box.textContent = '请求失败：' + (err && err.message ? err.message : String(err))
+        + '\n\n提示：浏览器直接调用第三方 API 可能被跨域（CORS）拦截。若失败，请改用上面的「复制提问模板」，粘贴到对应大模型的对话框中使用。';
+    }
+  }
+
+  /* ---------------- 全局搜索 ---------------- */
+  function viewSearch(q) {
+    const kw = norm(q);
+    const rl = RULES.filter((t) => norm([t.term, t.def, t.plain, t.cat].join(' ')).includes(kw)).slice(0, 8);
+    const mj = MAJORS.filter((m) => norm([m.name, m.cat, m.desc].join(' ')).includes(kw)).slice(0, 8);
+    const un = UNIS.filter((u) => norm([u.name, u.province, u.city, u.type, u.featureSubjects, u.topMajors, u.note].join(' ')).includes(kw)).slice(0, 12);
+    const total = rl.length + mj.length + un.length;
+    return `
+    <div class="page-head">
+      <h1>搜索「${esc(q)}」</h1>
+      <p>共找到 ${total} 条结果${total === 0 ? '，换个关键词试试' : ''}。</p>
+    </div>
+    ${!total ? `<div class="empty"><div class="big">⌕</div>没有找到相关内容</div>` : ''}
+    ${rl.length ? `
+      <div class="section-head"><h2>规则与名词</h2><span class="hint">${rl.length} 条</span></div>
+      <div class="term-list">${rl.map((t) => ruleCard(t, false)).join('')}</div>` : ''}
+    ${mj.length ? `
+      <div class="section-head"><h2>专业与行业</h2><span class="hint">${mj.length} 条</span></div>
+      <div class="grid grid-2">${mj.map((m) => `
+        <div class="card"><div class="card-title">${esc(m.name)}</div>
+        <div class="tag-row" style="margin:8px 0"><span class="tag tag-plain">${esc(m.cat)}</span><span class="tag">热度 ${esc(m.heat)}</span></div>
+        <p class="card-desc">${esc(m.desc)}</p></div>`).join('')}</div>` : ''}
+    ${un.length ? `
+      <div class="section-head"><h2>院校</h2><span class="hint">${un.length} 所（最多显示 12 所）</span></div>
+      <div class="grid grid-3">${un.map((u) => `
+        <a class="card" href="#/universities" data-jump-uni="${esc(u.id || u.name)}">
+          <div class="card-title">${esc(u.name)}</div>
+          <div class="tag-row" style="margin:8px 0">${uniTags(u)}<span class="tag tag-plain">${esc(u.province)}</span></div>
+          <p class="card-desc">${esc(u.topMajors)}</p></a>`).join('')}</div>` : ''}`;
+  }
+
+  /* ---------------- 路由 ---------------- */
+  const RENDERERS = {
+    home: viewHome, rules: viewRules, majors: viewMajors,
+    universities: viewUniversities, ai: viewAI
+  };
+
+  function route() {
+    const raw = location.hash.replace(/^#\/?/, '') || 'home';
+    const [path, qs] = raw.split('?');
+    const params = new URLSearchParams(qs || '');
+    const name = RENDERERS[path] ? path : 'home';
+
+    if (path === 'search') {
+      $('#app').innerHTML = viewSearch(params.get('q') || '');
+    } else {
+      $('#app').innerHTML = RENDERERS[name]();
+    }
+
+    document.querySelectorAll('#nav a').forEach((a) => {
+      a.classList.toggle('active', a.dataset.route === (path === 'search' ? '' : name));
+    });
+
+    if (name === 'rules' && path !== 'search') paintRules();
+    if (name === 'majors' && path !== 'search') paintMajors();
+    if (name === 'universities' && path !== 'search') paintUniversities();
+    if (path === 'search') {
+      const q = params.get('q') || '';
+      const gs = $('#globalSearch'); if (gs) gs.value = q;
+    }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- 事件绑定 ---------------- */
+  function bind() {
+    document.addEventListener('click', (e) => {
+      const chip = e.target.closest('.chip');
+      if (chip) {
+        const box = chip.parentElement;
+        box.querySelectorAll('.chip').forEach((c) => c.classList.remove('on'));
+        chip.classList.add('on');
+        if (box.id === 'ruleCats') { UI.rules.cat = chip.dataset.cat; paintRules(); }
+        if (box.id === 'majorLevels') { UI.majors.level = chip.dataset.lv; paintMajors(); }
+        if (box.id === 'uniTags') { UI.unis.tag = chip.dataset.tag; UI.unis.page = 1; paintUniversities(); }
+        return;
+      }
+
+      const head = e.target.closest('.term-head');
+      if (head) { head.parentElement.classList.toggle('open'); return; }
+
+      const mrow = e.target.closest('.major-row');
+      if (mrow) { openMajor(mrow.dataset.major); return; }
+
+      const urow = e.target.closest('tr[data-uni]');
+      if (urow) { openUni(urow.dataset.uni); return; }
+
+      const jump = e.target.closest('[data-jump-uni]');
+      if (jump) {
+        const key = jump.dataset.jumpUni;
+        setTimeout(() => {
+          const row = document.querySelector(`tr[data-uni="${key}"]`);
+          if (row) { openUni(key); } else { openUni(key); }
+        }, 60);
+        return;
+      }
+
+      const pbtn = e.target.closest('#uniPager button[data-page]');
+      if (pbtn && !pbtn.disabled) {
+        UI.unis.page = Number(pbtn.dataset.page) || 1;
+        paintUniversities();
+        document.querySelector('.table-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      if (e.target.id === 'drawerMask' || e.target.closest('#drawerClose')) { closeUni(); return; }
+      if (e.target.id === 'aiGen') { aiGenerate(); return; }
+      if (e.target.id === 'aiCall') { aiCall(); return; }
+      if (e.target.id === 'aiClear') {
+        ['aiScore', 'aiRank', 'aiMajor', 'aiJob', 'aiCity', 'aiUni', 'aiExtra'].forEach((id) => { $('#' + id).value = ''; });
+        $('#aiProv').value = ''; $('#aiKe').value = '';
+        $('#aiResultCard').style.display = 'none'; $('#aiAnswer').style.display = 'none';
+        return;
+      }
+      if (e.target.id === 'aiCopy') {
+        const btn = e.target;
+        const box = $('#aiPrompt');
+        const txt = box.textContent;
+        const reset = () => { btn.textContent = '复制提问模板'; };
+        const done = () => { btn.textContent = '已复制 ✓'; setTimeout(reset, 1600); };
+        const selectAll = () => {
+          const r = document.createRange();
+          r.selectNodeContents(box);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+          btn.textContent = '已全选，请按 Ctrl+C';
+          setTimeout(reset, 2400);
+        };
+        const legacy = () => {
+          const ta = document.createElement('textarea');
+          ta.value = txt;
+          ta.setAttribute('readonly', '');
+          ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          let ok = false;
+          try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+          document.body.removeChild(ta);
+          if (ok) done(); else selectAll();
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(done, legacy);
+        } else {
+          legacy();
+        }
+        return;
+      }
+      if (e.target.id === 'heroSearchBtn') {
+        const q = $('#heroSearch').value.trim();
+        if (q) location.hash = '#/search?q=' + encodeURIComponent(q);
+        return;
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      if (e.target.id === 'globalSearch' || e.target.id === 'heroSearch') {
+        const q = e.target.value.trim();
+        if (q) location.hash = '#/search?q=' + encodeURIComponent(q);
+      }
+    });
+
+    let timer = null;
+    document.addEventListener('input', (e) => {
+      const id = e.target.id;
+      if (id === 'ruleSearch' || id === 'uniSearch') {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          if (id === 'ruleSearch') { UI.rules.q = e.target.value; paintRules(); }
+          else { UI.unis.q = e.target.value; UI.unis.page = 1; paintUniversities(); }
+        }, 160);
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      if (e.target.id === 'uniProv') { UI.unis.prov = e.target.value; UI.unis.page = 1; paintUniversities(); }
+      if (e.target.id === 'uniType') { UI.unis.type = e.target.value; UI.unis.page = 1; paintUniversities(); }
+    });
+
+    window.addEventListener('hashchange', route);
+  }
+
+  function openMajor(name) {
+    const m = MAJORS.find((x) => x.name === name);
+    if (!m) return;
+    const lvTag = m.level === '绿牌' ? 'tag-green' : m.level === '红牌' ? 'tag-red' : 'tag-amber';
+    const row = (k, v) => `<div class="drow"><span class="dk">${esc(k)}</span><span class="dv">${esc(v || '暂无公开数据')}</span></div>`;
+    $('#drawerHead').innerHTML = `
+      <h2>${esc(m.name)}</h2>
+      <div class="tag-row">
+        <span class="tag tag-plain">${esc(m.cat)}</span>
+        <span class="tag ${lvTag}">${esc(m.level)}</span>
+        <span class="tag">热度 ${esc(m.heat)}</span>
+        <span class="tag tag-plain">趋势：${esc(m.trend)}</span>
+      </div>
+      <button class="drawer-close" id="drawerClose" type="button">✕</button>`;
+    $('#drawerBody').innerHTML = `
+      ${row('专业简介', m.desc)}
+      ${row('薪酬参考', m.salary)}
+      ${row('典型岗位', (m.jobs || []).join('、'))}
+      <div class="note-box">热度指数与薪酬为公开资料综合整理的参考值，仅供了解趋势，请以官方与招生章程为准。</div>`;
+    $('#drawer').classList.add('show');
+    $('#drawerMask').classList.add('show');
+  }
+
+  /* ---------------- 启动 ---------------- */
+  function boot() {
+    if (!document.getElementById('drawer')) {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="drawer-mask" id="drawerMask"></div>
+        <aside class="drawer" id="drawer">
+          <div class="drawer-head" id="drawerHead"></div>
+          <div class="drawer-body" id="drawerBody"></div>
+        </aside>`;
+      document.body.appendChild(wrap);
+    }
+    bind();
+    route();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+</body>
+</html>
